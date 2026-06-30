@@ -18,7 +18,14 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/common/*": ["src/common/*"],
+      "@/modules/*": ["src/modules/*"],
+      "@/auth/*": ["src/auth/*"],
+      "@/prisma/*": ["src/database/prisma/*"],
+      "@/prisma-client": ["src/generated/prisma/client"],
+      "@/tools/*": ["src/tools/*"],
+      "@/types/*": ["src/types/*"],
+      "@/database/*": ["src/database/*"],
+    },
+  },
 }

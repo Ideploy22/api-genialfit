@@ -1,0 +1,90 @@
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { PageDto } from "@/common/dto/page.dto";
+import { PageMetaDto } from "@/common/dto/page-meta.dto";
+import { PageOptionsDto } from "@/common/dto/page-options.dto";
+import { PrismaService } from "@/database/prisma/prisma.service";
+import { Prisma } from "@/prisma-client";
+import { Create{{pascalCase singular}}Dto } from "./dto/create-{{singular}}.dto";
+import { Update{{pascalCase singular}}Dto } from "./dto/update-{{singular}}.dto";
+import { {{pascalCase singular}} } from "./entities/{{singular}}.entity";
+
+@Injectable()
+export class {{pascalCase name}}Service {
+	constructor(private readonly prisma: PrismaService) {}
+
+	create(create{{pascalCase singular}}Dto: Create{{pascalCase singular}}Dto): Promise<{{pascalCase singular}}> {
+		return this.prisma.{{prismaModel}}.create({
+			data: create{{pascalCase singular}}Dto,
+		});
+	}
+
+	async findAll(
+		pageOptionsDto: PageOptionsDto,
+	): Promise<PageDto<{{pascalCase singular}}>> {
+		const where: Prisma.{{pascalCase prismaModel}}WhereInput = {};
+		const allowedFields = ["id"];
+
+		if (pageOptionsDto.search) {
+			if (!allowedFields.includes(pageOptionsDto.search.field)) {
+				throw new BadRequestException(
+					`Campo inválido: "${pageOptionsDto.search.field}". Campos permitidos: ${allowedFields.join(", ")}`,
+				);
+			} else {
+				where[pageOptionsDto.search.field] = {
+					contains: pageOptionsDto.search.value,
+					mode: "insensitive",
+				};
+			}
+		}
+
+		const [items, itemCount] = await Promise.all([
+			this.prisma.{{prismaModel}}.findMany({
+				where,
+				skip: pageOptionsDto.skip,
+				take: pageOptionsDto.all ? undefined : pageOptionsDto.take,
+				orderBy: {
+					id: pageOptionsDto.order,
+				},
+			}) as unknown as {{pascalCase singular}}[],
+			this.prisma.{{prismaModel}}.count({ where }),
+		]);
+
+		const pageMetaDto = new PageMetaDto({ itemCount, pageOptionsDto });
+		return new PageDto(items, pageMetaDto);
+	}
+
+	async findOne(id: string) {
+		const item = await this.prisma.{{prismaModel}}.findUnique({
+			where: { id },
+		});
+		if (!item) {
+			throw new NotFoundException("{{pascalCase singular}} não encontrado");
+		}
+		return item;
+	}
+
+	async update(id: string, update{{pascalCase singular}}Dto: Update{{pascalCase singular}}Dto) {
+		const item = await this.prisma.{{prismaModel}}.findUnique({
+			where: { id },
+		});
+		if (!item) {
+			throw new NotFoundException("{{pascalCase singular}} não encontrado");
+		}
+		return this.prisma.{{prismaModel}}.update({
+			where: { id },
+			data: update{{pascalCase singular}}Dto,
+		});
+	}
+
+	async remove(id: string) {
+		const item = await this.prisma.{{prismaModel}}.findUnique({
+			where: { id },
+		});
+		if (!item) {
+			throw new NotFoundException("{{pascalCase singular}} não encontrado");
+		}
+		return this.prisma.{{prismaModel}}.delete({
+			where: { id },
+		});
+	}
+}

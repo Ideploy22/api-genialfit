@@ -1,43 +1,62 @@
-import * as fastifySwagger from '@fastify/swagger';
-import { ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './app.module';
-import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
-import Default from './config/configuration';
+import multipart from "@fastify/multipart";
+import { ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import type { NestFastifyApplication } from "@nestjs/platform-fastify";
+import { FastifyAdapter } from "@nestjs/platform-fastify";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
+import ScalarApiReference from "@scalar/fastify-api-reference";
+import { Server } from "socket.io";
+import { AppModule } from "./app.module";
+import { PrismaExceptionFilter } from "./common/filters/prisma-exception.filter";
+import Default from "./config/configuration";
+import { PropsUserLogado } from "./types";
 
-import multipart from '@fastify/multipart';
+declare module "fastify" {
+	interface FastifyInstance {
+		io: Server;
+	}
+
+	interface FastifyRequest {
+		userLogged: PropsUserLogado;
+	}
+
+	interface RouteOptions {
+		config?: { reference: string };
+	}
+}
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestFastifyApplication>(
-    AppModule,
-    new FastifyAdapter({
-      logger: Default().envToLogger[process.env.NODE_ENV],
-    }),
-  );
-  app.enableCors();
+	const app = await NestFactory.create<NestFastifyApplication>(
+		AppModule,
+		new FastifyAdapter({
+			logger: Default().envToLogger[process.env.NODE_ENV],
+		}),
+	);
+	app.enableCors();
 
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  const config = new DocumentBuilder()
-    .setTitle('Minha API')
-    .setDescription('Documentação da API usando Fastify')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+	app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  const document = SwaggerModule.createDocument(app, config);
+	const config = new DocumentBuilder()
+		.setTitle("Genialfit API")
+		.setDescription("Documentação da API")
+		.setVersion("1.0")
+		.addBearerAuth()
+		.build();
 
-  await app.register(fastifySwagger);
-  SwaggerModule.setup('docs', app, document);
+	const document = SwaggerModule.createDocument(app, config);
 
-  app.useGlobalFilters(new PrismaExceptionFilter());
+	const fastify = app.getHttpAdapter().getInstance();
+	await fastify.register(ScalarApiReference, {
+		routePrefix: "/docs",
+		configuration: {
+			content: document,
+		},
+	});
 
-  await app.register(multipart);
+	app.useGlobalFilters(new PrismaExceptionFilter());
 
-  await app.listen(4000, '0.0.0.0');
+	await app.register(multipart);
+
+	await app.listen(process.env.PORT || 4000, "0.0.0.0");
 }
 bootstrap();

@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException } from "@nestjs/common";
 
 /**
  * Valida se os campos de busca existem no modelo do Prisma.
@@ -6,16 +6,16 @@ import { BadRequestException } from '@nestjs/common';
  * @param search Objeto de busca enviado na requisição.
  */
 export function validatePrismaFields(
-  model: Record<string, string>,
-  search?: Record<string, string>,
+	model: Record<string, string>,
+	search?: Record<string, string>,
 ) {
-  if (search) {
-    const validFields = Object.values(model);
+	if (search) {
+		const validFields = Object.values(model);
 
-    for (const key of Object.keys(search)) {
-      if (!validFields.includes(key)) {
-        throw new BadRequestException(`O campo '${key}' não existe no modelo.`);
-      }
-    }
-  }
+		for (const key of Object.keys(search)) {
+			if (!validFields.includes(key)) {
+				throw new BadRequestException(`O campo '${key}' não existe no modelo.`);
+			}
+		}
+	}
 }

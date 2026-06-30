@@ -13,12 +13,175 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  MASTER
+  ADMIN
+  USER
+}
+
+enum CompanyType {
+  JURIDICA
+  FISICA
+}
+
 model User {
   id        Int       @id @default(autoincrement())
   name      String
+  active    Boolean   @default(true)
   email     String    @unique
   password  String
   avatar    String?
+  role      Role
+  company   Company?  @relation(fields: [companyId], references: [id])
+  companyId String?
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+}
+
+
+model Company {
+  id           String       @id @default(uuid())
+  name         String
+  type         CompanyType
+  logo         String?
+  logoNegative String?
+  timezone     String?
+  phone        String?
+  address      String?
+  cpf          String?
+  cnpj         String?
+  colors       String?
+  users        User[]
+  devices      Device[]
+  colorCompany ColorCompany?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+}
+
+model ColorCompany {
+  id           String       @id @default(uuid())
+  primary1     String?
+  primary2     String?
+  primary3     String?
+  company      Company?  @relation(fields: [companyId], references: [id])
+  companyId    String?   @unique
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+}
+
+// ─── Device ────────────────────────────────────────────────────────────────
+
+enum DeviceStatus {
+  PENDING   // aguardando aprovação do admin
+  APPROVED  // dispositivo confiável, pode autenticar
+  BLOCKED   // temporariamente bloqueado
+  REVOKED   // credenciais revogadas permanentemente
+}
+
+enum DeviceEvent {
+  DEVICE_REGISTERED
+  DEVICE_APPROVED
+  DEVICE_BLOCKED
+  DEVICE_UNBLOCKED
+  DEVICE_REVOKED
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  REFRESH_TOKEN
+  SESSION_REVOKED
+  HEARTBEAT_RECEIVED
+  VERSION_UPDATED
+  SECRET_ROTATED
+}
+
+model Device {
+  id           String        @id @default(cuid())
+
+  /// UUID imutável gerado pelo Electron na primeira execução
+  deviceId     String        @unique
+
+  /// Nome do host Windows (automático)
+  hostname     String
+
+  /// Nome amigável configurado pelo admin (ex: "Recepção 01")
+  displayName  String?
+
+  /// Segredo do dispositivo — sempre armazenado como hash (bcrypt/argon2)
+  deviceSecret String
+
+  status       DeviceStatus  @default(PENDING)
+
+  // ── Hardware ─────────────────────────────
+  serialNumber String?
+  macAddress   String?
+  os           String?
+  appVersion   String?
+
+  // ── Multi-tenant ─────────────────────────
+  companyId    String?
+  company      Company?      @relation(fields: [companyId], references: [id])
+
+  // ── Controle de ciclo de vida ─────────────
+  lastSeen     DateTime?
+  approvedAt   DateTime?
+  approvedBy   String?       // id do User que aprovou
+  blockedAt    DateTime?
+  blockedBy    String?       // id do User que bloqueou
+  revokedAt    DateTime?
+  revokedBy    String?       // id do User que revogou
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  sessions     DeviceSession[]
+  logs         DeviceLog[]
+
+  @@index([status])
+  @@index([companyId])
+  @@index([lastSeen])
+  @@index([status, companyId])
+}
+
+model DeviceSession {
+  id           String    @id @default(cuid())
+
+  device       Device    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  deviceId     String
+
+  /// Hash do refresh token — nunca armazenar o valor plain
+  refreshToken String    @unique
+
+  ip           String?
+  userAgent    String?
+
+  /// Revogação explícita sem deletar o registro (auditoria)
+  revokedAt    DateTime?
+
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+
+  @@index([deviceId])
+  @@index([expiresAt])
+  @@index([deviceId, expiresAt])
+  @@index([deviceId, revokedAt])
+}
+
+model DeviceLog {
+  id          String       @id @default(cuid())
+
+  device      Device       @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  deviceId    String
+
+  event       DeviceEvent
+  description String?
+
+  /// Dados contextuais livres: IP, versão anterior, motivo de bloqueio, etc.
+  metadata    Json?
+
+  createdAt   DateTime     @default(now())
+
+  @@index([deviceId])
+  @@index([event])
+  @@index([createdAt])
+  @@index([deviceId, createdAt])
+  @@index([deviceId, event])
 }

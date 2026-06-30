@@ -1,0 +1,72 @@
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	Param,
+	Patch,
+	Post,
+	Query,
+	UseGuards,
+} from "@nestjs/common";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
+import { ApiPaginatedResponse } from "@/common/decorators/api-paginated-response.decorator";
+import { ApiStandardResponse } from "@/common/decorators/api-standard-response.decorator";
+import { PageOptionsDto } from "@/common/dto/page-options.dto";
+import { Create{{pascalCase singular}}Dto } from "./dto/create-{{singular}}.dto";
+import { Update{{pascalCase singular}}Dto } from "./dto/update-{{singular}}.dto";
+import { {{pascalCase singular}} } from "./entities/{{singular}}.entity";
+import { {{pascalCase name}}Service } from "./{{name}}.service";
+
+@UseGuards(JwtAuthGuard)
+@Controller("{{name}}")
+export class {{pascalCase name}}Controller {
+	constructor(private readonly {{camelCase name}}Service: {{pascalCase name}}Service) {}
+
+	@Post()
+	@ApiOperation({ summary: "Create", description: "Criar {{singular}}" })
+	@ApiStandardResponse({ path: "/{{name}}" })
+	@ApiResponse({ status: 201, description: "Retorno de um {{singular}} criado", type: {{pascalCase singular}} })
+	create(@Body() create{{pascalCase singular}}Dto: Create{{pascalCase singular}}Dto) {
+		return this.{{camelCase name}}Service.create(create{{pascalCase singular}}Dto);
+	}
+
+	//==========================================================
+	@Get()
+	@ApiOperation({ summary: "Read", description: "Listagem de {{name}}" })
+	@ApiPaginatedResponse({{pascalCase singular}})
+	@ApiStandardResponse({ path: "/{{name}}" })
+	findAll(@Query() pageOptionsDto: PageOptionsDto) {
+		return this.{{camelCase name}}Service.findAll(pageOptionsDto);
+	}
+
+	//==========================================================
+	@Get(":id")
+	@ApiOperation({ summary: "Read by id", description: "Lista {{singular}}" })
+	@ApiStandardResponse({ path: "/{{name}}/:id" })
+	@ApiResponse({ status: 200, description: "Retorno de um {{singular}}", type: {{pascalCase singular}} })
+	findOne(@Param("id") id: string) {
+		return this.{{camelCase name}}Service.findOne(id);
+	}
+
+	//==========================================================
+	@Patch(":id")
+	@ApiOperation({ summary: "Update", description: "Atualizar {{singular}}" })
+	@ApiStandardResponse({ path: "/{{name}}/:id" })
+	@ApiResponse({ status: 200, description: "Retorno de um {{singular}} atualizado", type: {{pascalCase singular}} })
+	update(
+		@Param("id") id: string,
+		@Body() update{{pascalCase singular}}Dto: Update{{pascalCase singular}}Dto,
+	) {
+		return this.{{camelCase name}}Service.update(id, update{{pascalCase singular}}Dto);
+	}
+
+	//==========================================================
+	@Delete(":id")
+	@ApiOperation({ summary: "Delete", description: "Remover {{singular}}" })
+	@ApiStandardResponse({ path: "/{{name}}/:id" })
+	remove(@Param("id") id: string) {
+		return this.{{camelCase name}}Service.remove(id);
+	}
+}
