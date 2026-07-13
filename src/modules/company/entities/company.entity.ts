@@ -28,6 +28,9 @@ export class Company {
 	@ApiProperty()
 	name: string;
 
+	@ApiProperty()
+	unicName: string;
+
 	@ApiProperty({ enum: CompanyType })
 	type: CompanyType;
 

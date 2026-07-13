@@ -31,6 +31,11 @@ export class CreateCompanyDto {
 	@IsString()
 	name: string;
 
+	@ApiProperty({ example: "GENIALFIT" })
+	@IsNotEmpty()
+	@IsString()
+	unicName: string;
+
 	@ApiProperty({ enum: CompanyType, example: CompanyType.JURIDICA })
 	@IsEnum(CompanyType)
 	type: CompanyType;

@@ -30,7 +30,7 @@ export class CompanyService {
 
 	async findAll(pageOptionsDto: PageOptionsDto) {
 		const where: Prisma.CompanyWhereInput = {};
-		const allowedFields = ["name", "cnpj", "cpf"];
+		const allowedFields = ["name", "cnpj", "cpf", "unicName"];
 
 		if (pageOptionsDto.search) {
 			if (!allowedFields.includes(pageOptionsDto.search.field)) {
@@ -62,6 +62,15 @@ export class CompanyService {
 	async findOne(id: string) {
 		const item = await this.prisma.company.findUnique({
 			where: { id },
+			include: includeColors,
+		});
+		if (!item) throw new NotFoundException("Empresa não encontrada");
+		return item;
+	}
+
+	async findByUnicName(unicName: string) {
+		const item = await this.prisma.company.findUnique({
+			where: { unicName },
 			include: includeColors,
 		});
 		if (!item) throw new NotFoundException("Empresa não encontrada");

@@ -7,6 +7,7 @@ import {
 	Patch,
 	Post,
 	Query,
+	Req,
 	UseGuards,
 } from "@nestjs/common";
 import {
@@ -15,12 +16,20 @@ import {
 	ApiResponse,
 	ApiTags,
 } from "@nestjs/swagger";
+import type { FastifyRequest } from "fastify";
+import { DeviceJwtGuard } from "@/auth/device-jwt.guard";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { ApiPaginatedResponse } from "@/common/decorators/api-paginated-response.decorator";
 import { ApiStandardResponse } from "@/common/decorators/api-standard-response.decorator";
+import { DeviceLogged } from "@/common/decorators/device-logged.decorator";
+import { UserLogged } from "@/common/decorators/user-logged.decorator";
 import { PageOptionsDto } from "@/common/dto/page-options.dto";
+import type { PropsDeviceLogado, PropsUserLogado } from "@/types";
 import { DeviceService } from "./device.service";
+import { DeviceAuthService } from "./device-auth.service";
 import { ActionDeviceDto } from "./dto/action-device.dto";
+import { LoginDeviceDto } from "./dto/login-device.dto";
+import { RefreshDeviceDto } from "./dto/refresh-device.dto";
 import { RegisterDeviceDto } from "./dto/register-device.dto";
 import { UpdateDeviceDto } from "./dto/update-device.dto";
 import { DeviceEntity, DeviceLogEntity } from "./entities/device.entity";
@@ -28,7 +37,10 @@ import { DeviceEntity, DeviceLogEntity } from "./entities/device.entity";
 @ApiTags("Devices")
 @Controller("device")
 export class DeviceController {
-	constructor(private readonly deviceService: DeviceService) {}
+	constructor(
+		private readonly deviceService: DeviceService,
+		private readonly deviceAuthService: DeviceAuthService,
+	) {}
 
 	// ── Público — chamado pelo Electron ─────────────────────────────────────
 
@@ -41,6 +53,55 @@ export class DeviceController {
 	@ApiResponse({ status: 201, type: DeviceEntity })
 	register(@Body() dto: RegisterDeviceDto) {
 		return this.deviceService.register(dto);
+	}
+
+	@Post("auth/login")
+	@ApiOperation({
+		summary: "Autenticar dispositivo",
+		description:
+			"Valida deviceId + deviceSecret e retorna access/refresh token.",
+	})
+	@ApiResponse({
+		status: 200,
+		schema: {
+			example: { accessToken: "...", refreshToken: "...", expiresIn: "15m" },
+		},
+	})
+	login(@Body() dto: LoginDeviceDto, @Req() req: FastifyRequest) {
+		return this.deviceAuthService.login(dto, req.ip, req.headers["user-agent"]);
+	}
+
+	@Post("auth/refresh")
+	@ApiOperation({
+		summary: "Renovar token",
+		description: "Rotaciona o refresh token e emite novo access token.",
+	})
+	@ApiResponse({
+		status: 200,
+		schema: {
+			example: { accessToken: "...", refreshToken: "...", expiresIn: "15m" },
+		},
+	})
+	refresh(@Body() dto: RefreshDeviceDto, @Req() req: FastifyRequest) {
+		return this.deviceAuthService.refresh(
+			dto,
+			req.ip,
+			req.headers["user-agent"],
+		);
+	}
+
+	@UseGuards(DeviceJwtGuard)
+	@ApiBearerAuth()
+	@Post("auth/heartbeat")
+	@ApiOperation({
+		summary: "Heartbeat",
+		description: "Sinaliza que o dispositivo está online. Atualiza lastSeen.",
+	})
+	heartbeat(
+		@DeviceLogged() device: PropsDeviceLogado,
+		@Req() req: FastifyRequest,
+	) {
+		return this.deviceAuthService.heartbeat(device.deviceId, req.ip);
 	}
 
 	// ── Rotas administrativas ────────────────────────────────────────────────
@@ -75,7 +136,7 @@ export class DeviceController {
 		return this.deviceService.findLogs(id, pageOptionsDto);
 	}
 
-	@UseGuards(JwtAuthGuard)
+	// @UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
 	@Patch(":id")
 	@ApiOperation({ summary: "Atualizar nome amigável ou versão do app" })
@@ -93,9 +154,12 @@ export class DeviceController {
 		description: "Muda status de PENDING para APPROVED.",
 	})
 	@ApiResponse({ status: 200, type: DeviceEntity })
-	approve(@Param("id") id: string, @Body() dto: ActionDeviceDto) {
-		// TODO: extrair userId do JWT quando decorator userLogged estiver disponível
-		return this.deviceService.approve(id, dto, "system");
+	approve(
+		@Param("id") id: string,
+		@Body() dto: ActionDeviceDto,
+		@UserLogged() user: PropsUserLogado,
+	) {
+		return this.deviceService.approve(id, dto, user.name);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -106,8 +170,12 @@ export class DeviceController {
 		description: "Revoga todas as sessões ativas e bloqueia o device.",
 	})
 	@ApiResponse({ status: 200, type: DeviceEntity })
-	block(@Param("id") id: string, @Body() dto: ActionDeviceDto) {
-		return this.deviceService.block(id, dto, "system");
+	block(
+		@Param("id") id: string,
+		@Body() dto: ActionDeviceDto,
+		@UserLogged() user: PropsUserLogado,
+	) {
+		return this.deviceService.block(id, dto, user.name);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -118,8 +186,12 @@ export class DeviceController {
 		description: "Reativa dispositivo bloqueado para APPROVED.",
 	})
 	@ApiResponse({ status: 200, type: DeviceEntity })
-	unblock(@Param("id") id: string, @Body() dto: ActionDeviceDto) {
-		return this.deviceService.unblock(id, dto, "system");
+	unblock(
+		@Param("id") id: string,
+		@Body() dto: ActionDeviceDto,
+		@UserLogged() user: PropsUserLogado,
+	) {
+		return this.deviceService.unblock(id, dto, user.name);
 	}
 
 	@UseGuards(JwtAuthGuard)
@@ -130,8 +202,12 @@ export class DeviceController {
 		description: "Revogação permanente. Revoga todas as sessões ativas.",
 	})
 	@ApiResponse({ status: 200, type: DeviceEntity })
-	revoke(@Param("id") id: string, @Body() dto: ActionDeviceDto) {
-		return this.deviceService.revoke(id, dto, "system");
+	revoke(
+		@Param("id") id: string,
+		@Body() dto: ActionDeviceDto,
+		@UserLogged() user: PropsUserLogado,
+	) {
+		return this.deviceService.revoke(id, dto, user.name);
 	}
 
 	@UseGuards(JwtAuthGuard)

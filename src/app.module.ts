@@ -7,6 +7,7 @@ import { PrismaExceptionFilter } from "./common/filters/prisma-exception.filter"
 import { PrismaModule } from "./database/prisma/prisma.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { DeviceModule } from "./modules/device/device.module";
+import { MidiasModule } from "./modules/midias/midias.module";
 import { UserModule } from "./modules/user/user.module";
 
 @Module({
@@ -15,6 +16,7 @@ import { UserModule } from "./modules/user/user.module";
 		ConfigModule.forRoot({ isGlobal: true }),
 		AuthModule,
 		UserModule,
+		MidiasModule,
 		CompanyModule,
 		DeviceModule,
 	],

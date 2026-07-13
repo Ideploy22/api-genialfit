@@ -9,7 +9,7 @@ import {
 	Query,
 	UseGuards,
 } from "@nestjs/common";
-import { ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { ApiPaginatedResponse } from "@/common/decorators/api-paginated-response.decorator";
 import { ApiStandardResponse } from "@/common/decorators/api-standard-response.decorator";
@@ -19,11 +19,27 @@ import { CreateCompanyDto } from "./dto/create-company.dto";
 import { UpdateCompanyDto } from "./dto/update-company.dto";
 import { Company } from "./entities/company.entity";
 
-@UseGuards(JwtAuthGuard)
 @Controller("company")
 export class CompanyController {
 	constructor(private readonly companyService: CompanyService) {}
 
+	// ── Público ──────────────────────────────────────────────────────────────
+
+	@Get("public/:unicName")
+	@ApiOperation({ summary: "Read by unicName", description: "Busca company pelo unicName (rota pública)" })
+	@ApiResponse({
+		status: 200,
+		description: "Retorno de um company",
+		type: Company,
+	})
+	findByUnicName(@Param("unicName") unicName: string) {
+		return this.companyService.findByUnicName(unicName);
+	}
+
+	// ── Rotas administrativas ────────────────────────────────────────────────
+
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
 	@Post()
 	@ApiOperation({ summary: "Create", description: "Criar company" })
 	@ApiStandardResponse({ path: "/company" })
@@ -36,7 +52,8 @@ export class CompanyController {
 		return this.companyService.create(createCompanyDto);
 	}
 
-	//==========================================================
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
 	@Get()
 	@ApiOperation({ summary: "Read", description: "Listagem de company" })
 	@ApiPaginatedResponse(Company)
@@ -45,7 +62,8 @@ export class CompanyController {
 		return this.companyService.findAll(pageOptionsDto);
 	}
 
-	//==========================================================
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
 	@Get(":id")
 	@ApiOperation({ summary: "Read by id", description: "Lista company" })
 	@ApiStandardResponse({ path: "/company/:id" })
@@ -58,7 +76,8 @@ export class CompanyController {
 		return this.companyService.findOne(id);
 	}
 
-	//==========================================================
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
 	@Patch(":id")
 	@ApiOperation({ summary: "Update", description: "Atualizar company" })
 	@ApiStandardResponse({ path: "/company/:id" })
@@ -71,7 +90,8 @@ export class CompanyController {
 		return this.companyService.update(id, updateCompanyDto);
 	}
 
-	//==========================================================
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
 	@Delete(":id")
 	@ApiOperation({ summary: "Delete", description: "Remover company" })
 	@ApiStandardResponse({ path: "/company/:id" })

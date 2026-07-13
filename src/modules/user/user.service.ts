@@ -45,9 +45,11 @@ export class UserService {
 				skip: pageOptionsDto.skip,
 				take: pageOptionsDto.all ? undefined : pageOptionsDto.take,
 				select: {
+					id: true,
 					name: true,
 					email: true,
 					role: true,
+					active: true,
 				},
 				orderBy: {
 					id: pageOptionsDto.order,
@@ -64,9 +66,11 @@ export class UserService {
 		const item = await this.prisma.user.findUnique({
 			where: { id },
 			select: {
+				id: true,
 				name: true,
 				email: true,
 				role: true,
+				active: true,
 			},
 		});
 		if (!item) {

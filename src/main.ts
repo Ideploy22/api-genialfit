@@ -32,7 +32,12 @@ async function bootstrap() {
 			logger: Default().envToLogger[process.env.NODE_ENV],
 		}),
 	);
-	app.enableCors();
+	app.enableCors({
+		origin: "*",
+		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization"],
+		credentials: false,
+	});
 
 	app.useGlobalPipes(new ValidationPipe({ transform: true }));
 

@@ -46,6 +46,7 @@ model Company {
   logo         String?
   logoNegative String?
   timezone     String?
+  unicName     String       @unique
   phone        String?
   address      String?
   cpf          String?

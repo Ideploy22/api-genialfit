@@ -24,6 +24,7 @@
       "@/prisma/*": ["src/database/prisma/*"],
       "@/prisma-client": ["src/generated/prisma/client"],
       "@/tools/*": ["src/tools/*"],
+      "@/types": ["src/types"],
       "@/types/*": ["src/types/*"],
       "@/database/*": ["src/database/*"],
     },

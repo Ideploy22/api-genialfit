@@ -1,6 +1,12 @@
-import { Role } from "@/modules/users/dto/create-users.dto";
+import { Role } from "@prisma/client";
 
 export interface PropsUserLogado {
 	name: string;
 	role: Role;
+}
+
+export interface PropsDeviceLogado {
+	deviceId: string;          // id interno (cuid)
+	externalDeviceId: string;  // UUID do Electron
+	companyId: string | null;
 }
