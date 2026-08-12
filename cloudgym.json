@@ -1,0 +1,4673 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cloud Gym API",
+    "description": "This API provides endpoints for managing users, authentication, and business operations for the Cloud Gym platform.",
+    "version": "1.0.0"
+  },
+  "servers": [{ "url": "/" }],
+  "tags": [
+    {
+      "name": "Configuration",
+      "description": "Operations related to system configuration"
+    },
+    { "name": "Report", "description": "Operations related to system Reports" },
+    {
+      "name": "Customer",
+      "description": "Operations related to system Customer"
+    },
+    {
+      "name": "Administration",
+      "description": "Operations related to system administration"
+    },
+    {
+      "name": "Wellhub Integration",
+      "description": "Endpoints for Wellhub booking integration"
+    },
+    {
+      "name": "Financial",
+      "description": "Operations related to system Financial"
+    },
+    {
+      "name": "Workout",
+      "description": "Operations related to system Workout"
+    },
+    {
+      "name": "TotalPass Integration",
+      "description": "Endpoints for TotalPass booking integration"
+    },
+    {
+      "name": "Booking",
+      "description": "Operations related to class booking and scheduling"
+    }
+  ],
+  "paths": {
+    "/workout/workoutProgram": {
+      "put": {
+        "tags": ["Workout"],
+        "summary": "Update workout program",
+        "description": "Update an existing workout program.",
+        "operationId": "updateWorkoutProgram",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WorkoutProgram" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Workout"],
+        "summary": "Create new workout program",
+        "description": "Creates a new workout program.",
+        "operationId": "createWorkoutProgram",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WorkoutProgram" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/workoutFlow": {
+      "put": {
+        "tags": ["Workout"],
+        "summary": "Update workout flow",
+        "description": "Update an existing workout flow.",
+        "operationId": "updateWorkoutFlow",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WorkoutFlow" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Workout"],
+        "summary": "Create new workout flow",
+        "description": "Creates a new workout flow.",
+        "operationId": "createWorkoutFlow",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WorkoutFlow" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/memberObs": {
+      "put": {
+        "tags": ["Workout"],
+        "summary": "Update member workout observation",
+        "description": "Updates a member's workout observation.",
+        "operationId": "updateMemberObs",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/MemberObs" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/exercise": {
+      "put": {
+        "tags": ["Workout"],
+        "summary": "Update exercise",
+        "description": "Updates an existing exercise.",
+        "operationId": "updateExercise",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Exercise" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Exercise" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Workout"],
+        "summary": "Create new exercise",
+        "description": "Creates a new exercise.",
+        "operationId": "createExercise",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Exercise" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Exercise" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/copyworkout/templateworkout/{name}/{memberId}": {
+      "put": {
+        "tags": ["Workout"],
+        "summary": "Copy workout template for member",
+        "description": "Copy a workout template for a member.",
+        "operationId": "copyWorkout",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/copyworkout/templatemember/{frommemberId}/{tomemberId}": {
+      "put": {
+        "tags": ["Workout"],
+        "summary": "Copy workout from another member",
+        "description": "Copies a workout from another member to the current member.",
+        "operationId": "copyWorkoutTemplate",
+        "parameters": [
+          {
+            "name": "frommemberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "tomemberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/changeorderworkout/{memberId}/{workoutId}/{newOrder}": {
+      "put": {
+        "tags": ["Workout"],
+        "summary": "Change order of workout exercises",
+        "description": "Changes the order of exercises in a member's workout.",
+        "operationId": "changeOrderWorkout",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "workoutId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "newOrder",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/financial/account": {
+      "put": {
+        "tags": ["Financial"],
+        "summary": "Update Account",
+        "description": "Updates an existing account.",
+        "operationId": "updateAccount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Account" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Financial"],
+        "summary": "Create new account",
+        "description": "Creates a new account.",
+        "operationId": "newAccount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Account" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Update contract",
+        "description": "Updates an existing contract including payment method, bank data for debit, and card data for credit card payments.",
+        "operationId": "updateContract",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateContract" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/unfreeze": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Unfreeze contract",
+        "description": "Unfreezes an existing contract.",
+        "operationId": "unfreezeContract",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/stopautorenew": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Stop contract auto renew",
+        "description": "Stops the auto-renewal of an existing contract.",
+        "operationId": "stopAutoRenew",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/migrate/{planId}/{changeDueDate}/{computeprorata}": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Migrate contract",
+        "description": "Migrates an existing contract to a new plan or unit.",
+        "operationId": "migrateContract",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "changeDueDate",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "computeprorata",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "boolean" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/freeze": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Freeze contract",
+        "description": "Freezes an existing contract.",
+        "operationId": "freezeContract",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/extend/{days}": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Add days to contract",
+        "description": "Adds days to an existing contract.",
+        "operationId": "extendContract",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "days",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int32" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/changeduedate/{newDueDay}": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Change contract due date",
+        "description": "Changes the due date of an existing contract.",
+        "operationId": "changeContractDueDate",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "newDueDay",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/changebalance": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Change contract credits",
+        "description": "Changes attendance balance for an existing contract.",
+        "operationId": "updateContractBalance",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateContractBalance" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/cancel/{cancelDate}/{reason}": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Cancel contract",
+        "description": "Cancels an existing contract.",
+        "operationId": "cancelContract",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "cancelDate",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "reason",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/paymentmethod": {
+      "put": {
+        "tags": ["Customer"],
+        "summary": "Update contract payment method",
+        "description": "Updates the payment method of an existing contract.",
+        "operationId": "updateContractPaymentMethod",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NewContract" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/units": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get all units",
+        "description": "Retrieves a list of all units.",
+        "operationId": "getAllUnits",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Unit" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update unit",
+        "description": "Updates an existing unit.",
+        "operationId": "updateUnit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Unit" }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Create new unit",
+        "description": "Creates a new unit.",
+        "operationId": "newUnit",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Unit" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "type": "integer", "format": "int64" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/salesfunnel": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update sales funnel",
+        "description": "Updates an existing sales funnel.",
+        "operationId": "updateSalesFunnel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SalesFunnel" }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Create new sales funnel",
+        "description": "Creates a new sales funnel.",
+        "operationId": "newSalesFunnel",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SalesFunnel" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "type": "integer", "format": "int64" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/room": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update room",
+        "operationId": "updateRoom",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RoomDTO" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Create room",
+        "operationId": "createRoom",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RoomDTO" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/product": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update product",
+        "description": "Updates an existing product.",
+        "operationId": "updateProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Product" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Create new product",
+        "description": "Creates a new product.",
+        "operationId": "newProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Product" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/plan": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update plan",
+        "description": "Updates an existing plan.",
+        "operationId": "updatePlan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Plan" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Create new plan",
+        "description": "Creates a new plan.",
+        "operationId": "newPlan",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Plan" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/offer": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update offer",
+        "description": "Updates an existing offer.",
+        "operationId": "updateOffer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Offer" }
+            }
+          },
+          "required": true
+        },
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Create new offer",
+        "description": "Creates a new offer.",
+        "operationId": "newOffer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Offer" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/chartaccount": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update chart account",
+        "description": "Updates an existing chart account.",
+        "operationId": "updateChartAccount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChartAccount" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Create new chart account",
+        "description": "Creates a new chart account.",
+        "operationId": "newChartAccount",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChartAccount" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "type": "integer", "format": "int64" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/bank": {
+      "put": {
+        "tags": ["Configuration"],
+        "summary": "Update bank",
+        "description": "Updates an existing bank.",
+        "operationId": "updateBank",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Bank" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Create new bank",
+        "description": "Creates a new bank.",
+        "operationId": "newBank",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Bank" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/booking/classes": {
+      "put": {
+        "tags": ["Booking"],
+        "summary": "Update an existing class",
+        "description": "Updates an existing class with the provided details.",
+        "operationId": "updateClass",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AClass" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Booking"],
+        "summary": "Create a new class",
+        "description": "Creates a new class with the provided details.",
+        "operationId": "createClass",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AClass" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "tags": ["Administration"],
+        "summary": "Get all users",
+        "description": "Retrieves a paginated list of all user accounts. Only the following fields can be used for sorting: id, name, surname, lastLogin.\n\nExample request parameters:\n- page: 0\n- size: 10\n- sort: id,asc\n- sort: name,asc",
+        "operationId": "all",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/PageResponseUser" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "put": {
+        "tags": ["Administration"],
+        "summary": "Update user",
+        "description": "Updates an existing user account.",
+        "operationId": "updateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Administration"],
+        "summary": "Create new user",
+        "description": "Creates a new user account.",
+        "operationId": "newUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/User" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/workoutHistory": {
+      "post": {
+        "tags": ["Workout"],
+        "summary": "Create new workout history",
+        "description": "Creates a new workout history.",
+        "operationId": "createWorkoutHistory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WorkoutHistory" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/registerMemberTeam/{memberId}/{contractId}/{classId}": {
+      "post": {
+        "tags": ["Workout"],
+        "summary": "Register member team attendances",
+        "description": "Registers future class attendances for team classes based on member contract validity.",
+        "operationId": "registerMemberTeam",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "classId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/physicalassessment": {
+      "post": {
+        "tags": ["Workout"],
+        "summary": "Create new physical assessment",
+        "description": "Creates a new physical assessment.",
+        "operationId": "createPhysicalAssessment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PhysicalAssessment" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/changeflow/{memberId}/{flowId}": {
+      "post": {
+        "tags": ["Workout"],
+        "summary": "Change member workout flow",
+        "description": "Change a member's workout flow to a new one.",
+        "operationId": "changeMemberWorkoutFlow",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "flowId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/financial/ignoreofaccount/{id}": {
+      "post": {
+        "tags": ["Financial"],
+        "summary": "Ignore OF Account",
+        "description": "Marks an Open Finance account transaction as ignored.",
+        "operationId": "ignoreOFAccount",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer": {
+      "post": {
+        "tags": ["Customer"],
+        "summary": "Create new customer",
+        "description": "Creates a new customer.",
+        "operationId": "createMember",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NewMember" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/invoices/{id}/pay": {
+      "post": {
+        "tags": ["Customer"],
+        "summary": "Pay invoice",
+        "description": "Pays an invoice by ID. Optionally provide payment method and card details in the request body.",
+        "operationId": "payInvoices",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PayInvoiceDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/fromprospect": {
+      "post": {
+        "tags": ["Customer"],
+        "summary": "Create new member from prospect",
+        "description": "Creates a new member from a prospect.",
+        "operationId": "createMemberFromProspect",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NewOnlineMember" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract": {
+      "post": {
+        "tags": ["Customer"],
+        "summary": "Create new contract",
+        "description": "Creates a new contract.",
+        "operationId": "createContract",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NewContract" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/{contractId}/addons": {
+      "post": {
+        "tags": ["Customer"],
+        "summary": "Add addOns to contract",
+        "description": "Adds one or more addOn plans to an existing contract, distributing the cost across pending payments.",
+        "operationId": "addAddOnsToContract",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AddAddOnRequestDTO" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/contract/addon/{contractAddOnId}/remove": {
+      "post": {
+        "tags": ["Customer"],
+        "summary": "Remove addOn from contract",
+        "description": "Removes a specific addOn from all payments in the contract, recalculating payment amounts.",
+        "operationId": "removeAddOnFromContract",
+        "parameters": [
+          {
+            "name": "contractAddOnId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/confirmpayment/{tid}": {
+      "post": {
+        "tags": ["Customer"],
+        "summary": "Confirm payment",
+        "description": "Confirms a payment transaction with the payment provider and updates payment status.",
+        "operationId": "confirmPayment",
+        "parameters": [
+          {
+            "name": "tid",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/offers/upload-all-to-s3": {
+      "post": {
+        "tags": ["Configuration"],
+        "summary": "Upload all active offers to S3",
+        "description": "Uploads all active offers from all company groups to S3. This is a migration endpoint to sync existing active offers.",
+        "operationId": "uploadAllActiveOffersToS3",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/auth/token": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Authenticate user and get JWT token",
+        "description": "POST /token supports grant_type=password (prefers Basic Authorization header; accepts username/password in JSON body as fallback) or grant_type=google|microsoft|apple (authorization code flows).",
+        "operationId": "createToken2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TokenRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "basicAuth": [] }]
+      }
+    },
+    "/auth/password/reset": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Reset user password",
+        "description": "POST /password/reset generates a new random password for the user identified by email, updates it in the database, and sends the new password via email. Returns 0 on success, -1 on failure, -5 if user is disabled.",
+        "operationId": "resetPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ResetPasswordRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        }
+      }
+    },
+    "/auth/password/change": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Change user password",
+        "description": "POST /password/change allows an authenticated user to change their password. New password must have minimum 8 characters. Returns code 0 on success, -1 if validation fails.",
+        "operationId": "changePassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/PasswordChangeRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        }
+      }
+    },
+    "/api/wellhub/sync/unit/{unitId}": {
+      "post": {
+        "tags": ["Wellhub Integration"],
+        "summary": "Sync all unit classes to Wellhub (auto config)",
+        "description": "Syncs all classes for a unit to Wellhub. Gets gymId and productId automatically from the integration table (service=partnerAggregator, provider=wellhub). Groups classes by name (same name = same Wellhub class with different slots).",
+        "operationId": "syncUnitClassesAuto",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "deleteOrphans",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "createSlots",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean", "default": true }
+          },
+          {
+            "name": "visible",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean", "default": true }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "type": "object", "additionalProperties": {} }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/totalpass/sync/unit/{unitId}": {
+      "post": {
+        "tags": ["TotalPass Integration"],
+        "summary": "Sync all unit classes to TotalPass",
+        "description": "Syncs all classes for a unit to TotalPass. Gets placeApiKey, partnerApiKey, and planId automatically from the integration table (service=partnerAggregator, provider=totalpass). Groups classes by name (same name = same TotalPass event with different frequencyOptions).",
+        "operationId": "syncUnitClasses",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "deleteOrphans",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean", "default": true }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "type": "object", "additionalProperties": {} }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/workoutsHistory/{memberId}": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get all workout history by member ID",
+        "description": "Retrieves a paginated list of all workout history by member ID.",
+        "operationId": "getWorkoutHistory",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseWorkoutHistory"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/workoutPrograms": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get all workout programs",
+        "description": "Retrieves a paginated list of all workout programs. Only the following fields can be used for sorting: id, templateName",
+        "operationId": "getAllWorkoutPrograms",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseWorkoutProgram"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/workoutProgram/{id}": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get workout program by ID",
+        "description": "Retrieves a workout program by its ID.",
+        "operationId": "getWorkoutProgram",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/WorkoutProgram" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Workout"],
+        "summary": "Delete workout program",
+        "description": "Deletes an existing workout program by ID.",
+        "operationId": "deleteWorkoutProgram",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/workoutHistory/{id}": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get workout history by ID",
+        "description": "Retrieves a workout history by its ID.",
+        "operationId": "getWorkoutHistory_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/WorkoutHistory" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Workout"],
+        "summary": "Delete workout history",
+        "description": "Deletes an existing workout history by ID.",
+        "operationId": "deleteWorkoutHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/workoutFlows": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get all workout flows",
+        "description": "Retrieves a paginated list of all workout flows. Only the following fields can be used for sorting: id, name",
+        "operationId": "getAllWorkoutFlows",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseWorkoutFlow"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/workoutFlow/{id}": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get workout flow by ID",
+        "description": "Retrieves a workout flow by its ID.",
+        "operationId": "getWorkoutFlow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/WorkoutFlow" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Workout"],
+        "summary": "Delete workout flow",
+        "description": "Deletes an existing workout flow by ID.",
+        "operationId": "deleteWorkoutFlow",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/physicalassessments/{memberId}": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get all physical assessments by memberId",
+        "description": "Retrieves physical assessments for a member.",
+        "operationId": "getPhysicalAssessments",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponsePhysicalAssessment"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/memberWorkout/{memberId}": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get all workouts for a member",
+        "description": "Retrieves a paginated list of all workouts for a member.",
+        "operationId": "getMemberWorkouts",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseWorkoutProgram"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Workout"],
+        "summary": "Delete all workouts for a member",
+        "description": "Deletes all workouts for a member.",
+        "operationId": "deleteMemberWorkouts",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/memberObs/{memberId}": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get workout observation by memberId",
+        "description": "Retrieves a workout observation for a member.",
+        "operationId": "getMemberObs",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/MemberObs" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/exercises": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get all exercises",
+        "description": "Retrieves a paginated list of all exercises. Only the following fields can be used for sorting: id, name, groupName",
+        "operationId": "getAllExercises",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseExercise"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/exercise/{id}": {
+      "get": {
+        "tags": ["Workout"],
+        "summary": "Get exercise account by ID",
+        "description": "Retrieves a exercise by its ID.",
+        "operationId": "getExercise",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Exercise" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Workout"],
+        "summary": "Delete exercise",
+        "description": "Deletes an existing exercise by ID.",
+        "operationId": "deleteExercise",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/test/greeting": {
+      "get": {
+        "tags": ["greeting-controller"],
+        "operationId": "greeting",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "default": "World" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Greeting" } }
+            }
+          }
+        }
+      }
+    },
+    "/report/stats/{unitId}/{day}": {
+      "get": {
+        "tags": ["Report"],
+        "summary": "Get dashboard statistics",
+        "description": "Retrieves statistics for a unit and day (ISO format: yyyy-MM-dd).",
+        "operationId": "getStatistics",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "day",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/StatsView" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/report/inactivecustomers/{unitId}": {
+      "get": {
+        "tags": ["Report"],
+        "summary": "Get inactive customers",
+        "description": "Retrieves a paginated list of inactive customers for a specific unit. Use standard Spring Pageable params: page, size, sort.",
+        "operationId": "getInactiveCustomers",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1000 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseObject[]"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/report/goal/{unitId}/{salesId}/{begin}/{end}": {
+      "get": {
+        "tags": ["Report"],
+        "summary": "Get goal view",
+        "description": "Retrieves sales/goal dashboard data for a unit, sales user and date range.",
+        "operationId": "getGoalView",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "salesId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "begin",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          },
+          {
+            "name": "end",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/GoalView" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/report/finantial/{unitId}/{begin}/{end}": {
+      "get": {
+        "tags": ["Report"],
+        "summary": "Get financial view",
+        "description": "Retrieves financial dashboard data for a unit and date range.",
+        "operationId": "getFinantialView",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "begin",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          },
+          {
+            "name": "end",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/FinantialView" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/report/crm/{unitId}/{begin}/{end}": {
+      "get": {
+        "tags": ["Report"],
+        "summary": "Get CRM view",
+        "description": "Retrieves CRM dashboard data for a unit and date range.",
+        "operationId": "getCRMView",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "begin",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          },
+          {
+            "name": "end",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/CRMView" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/financial/memberPaymentsTax/{unitId}/{begin}/{end}": {
+      "get": {
+        "tags": ["Financial"],
+        "summary": "Get Member Payments for Tax",
+        "description": "Retrieves a paginated list of member payments for a specific unit within a date range for tax purposes.",
+        "operationId": "getMemberPaymentsTax",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "begin",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "end",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseMemberPayment"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/financial/memberPayments/{unitId}/{begin}/{end}": {
+      "get": {
+        "tags": ["Financial"],
+        "summary": "Get Member Payments",
+        "description": "Retrieves a paginated list of member payments for a specific unit within a date range.",
+        "operationId": "getMemberPayments",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "begin",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "end",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseMemberPayment"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/financial/accounts/{unitId}/{bankId}/{begin}/{end}": {
+      "get": {
+        "tags": ["Financial"],
+        "summary": "Get all accounts",
+        "description": "Retrieves accounts and legacy financial aggregates (beginBalance, endBalance, income, openFinnace).",
+        "operationId": "getAllAccounts",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "bankId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "begin",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "end",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/FinancialAccountsResponseDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/financial/account/{id}": {
+      "get": {
+        "tags": ["Financial"],
+        "summary": "Get Account by ID",
+        "description": "Retrieves an account by its ID.",
+        "operationId": "getAccountById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Account" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Financial"],
+        "summary": "Delete Account",
+        "description": "Deletes an account by its ID.",
+        "operationId": "deleteAccount",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/classattendance/{memberId}": {
+      "get": {
+        "tags": ["Customer"],
+        "summary": "Get class attendance for member",
+        "description": "Retrieves class attendance records for a specific member.",
+        "operationId": "getClassAttendance",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseClassAttendanceMemberDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/attendance/{memberId}": {
+      "get": {
+        "tags": ["Customer"],
+        "summary": "Get attendance for member",
+        "description": "Retrieves attendance records for a specific member.",
+        "operationId": "getAttendance",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseAttendanceDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/units/{id}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get unit by ID",
+        "description": "Retrieves a unit by its ID.",
+        "operationId": "getUnit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Unit" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Configuration"],
+        "summary": "Delete unit",
+        "description": "Deletes an existing unit.",
+        "operationId": "deleteUnit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/salesfunnels": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get all sales funnels",
+        "description": "Retrieves a list of all sales funnels.",
+        "operationId": "getAllSalesFunnels",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/SalesFunnel" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/salesfunnel/{id}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get sales funnel by ID",
+        "description": "Retrieves a sales funnel by its ID.",
+        "operationId": "getSalesFunnel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/SalesFunnel" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Configuration"],
+        "summary": "Delete sales funnel",
+        "description": "Deletes an existing sales funnel.",
+        "operationId": "deleteSalesFunnel",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/rooms/{unitId}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "List rooms for unit",
+        "operationId": "listRooms",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/RoomDTO" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/products/{unitId}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get all products",
+        "description": "Retrieves a paginated list of all products. Only the following fields can be used for sorting: id, code, name, category.\n\nExample request parameters:\n- page: 0\n- size: 10\n- sort: code,asc\n- sort: name,asc",
+        "operationId": "getAllProducts",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/PageResponseProduct" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/product/{id}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get product by ID",
+        "description": "Retrieves a product by its ID.",
+        "operationId": "getProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Product" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Configuration"],
+        "summary": "Delete product",
+        "description": "Deletes an existing product.",
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/plans/{unitId}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get all plans",
+        "description": "Retrieves a paginated list of all plans. Only the following fields can be used for sorting: id, name.",
+        "operationId": "getAllPlans",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/PageResponsePlan" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/plan/{id}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get plan by ID",
+        "description": "Retrieves a plan by its ID.",
+        "operationId": "getPlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Plan" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Configuration"],
+        "summary": "Delete plan",
+        "description": "Deletes an existing plan.",
+        "operationId": "deletePlan",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/offers/{unitId}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get all offers",
+        "description": "Retrieves a paginated list of all offers. Only the following fields can be used for sorting: id, name.",
+        "operationId": "getAllOffers",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/PageResponseOffer" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/offer/{id}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get offer by ID",
+        "description": "Retrieves an offer by its ID.",
+        "operationId": "getOffer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Offer" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Configuration"],
+        "summary": "Delete offer",
+        "description": "Deletes an existing offer.",
+        "operationId": "deleteOffer",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/chartaccounts": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get all chart accounts",
+        "description": "Retrieves a list of all chart accounts.",
+        "operationId": "getAllChartAccounts",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ChartAccount" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/chartaccount/{id}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get chart account by ID",
+        "description": "Retrieves a chart account by its ID.",
+        "operationId": "getChartAccount",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ChartAccount" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Configuration"],
+        "summary": "Delete chart account",
+        "description": "Deletes an existing chart account.",
+        "operationId": "deleteChartAccount",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/banks/{unitId}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get all banks",
+        "description": "Retrieves a paginated list of all banks. Only the following fields can be used for sorting: id, name, code, agency, account.",
+        "operationId": "getAllBanks",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Bank" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/bank/{id}": {
+      "get": {
+        "tags": ["Configuration"],
+        "summary": "Get bank by ID",
+        "description": "Retrieves a bank by its ID.",
+        "operationId": "getBank",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/Bank" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Configuration"],
+        "summary": "Delete bank",
+        "description": "Deletes an existing bank.",
+        "operationId": "deleteBank",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/booking/classes/{unitId}": {
+      "get": {
+        "tags": ["Booking"],
+        "summary": "Get all classes by unit",
+        "description": "Retrieves all classes for a specific unit, sorted by time.",
+        "operationId": "getClasses",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/AClass" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/booking/class/{classId}": {
+      "get": {
+        "tags": ["Booking"],
+        "summary": "Get class by ID",
+        "description": "Retrieves a specific class by its ID.",
+        "operationId": "getClassById",
+        "parameters": [
+          {
+            "name": "classId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/AClass" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/auth/token_checkout": {
+      "get": {
+        "tags": ["auth"],
+        "summary": "Authenticate user and get JWT token",
+        "description": "Send GroupID and ClientID using HTTP Basic Auth. The API expects the Authorization header in the format 'Basic base64(groupid:clientid)'. Include Google reCAPTCHA token in header 'recaptcha'. Use the 'Authorize' button in Swagger UI to enter your credentials.",
+        "operationId": "createTokenCheckout",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "basicAuth": [] }]
+      }
+    },
+    "/admin/users/{id}": {
+      "get": {
+        "tags": ["Administration"],
+        "summary": "Get user by ID",
+        "description": "Retrieves details of a specific user by their unique identifier.",
+        "operationId": "getUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": { "schema": { "$ref": "#/components/schemas/User" } }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "delete": {
+        "tags": ["Administration"],
+        "summary": "Delete user",
+        "description": "Deletes a user account",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/admin/classreservations/{classId}/{cdate}/{ctime}": {
+      "get": {
+        "tags": ["Administration"],
+        "summary": "Get class reservations",
+        "description": "Retrieves a list of class reservations for a specific class on a given date and time.",
+        "operationId": "getClassReserList",
+        "parameters": [
+          {
+            "name": "classId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "cdate",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "ctime",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassReservationDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/admin/classesattendance/{unitId}/{begin}/{end}/{instructorId}": {
+      "get": {
+        "tags": ["Administration"],
+        "summary": "Get classes attendance",
+        "description": "Retrieves a paginated list of class attendance records for a unit and instructor in a date range.",
+        "operationId": "getClassesAttendance",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "begin",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "end",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "instructorId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseClassAttendanceDTO"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/admin/classattendancelist/{unitId}/{date}/{classId}": {
+      "get": {
+        "tags": ["Administration"],
+        "summary": "Get class attendance list",
+        "description": "Retrieves a list of class attendance records for a specific unit and class on a given date.",
+        "operationId": "getClassAttendanceList",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          },
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "classId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClassAttendanceOccupationDTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/workout/physicalassessment/{id}": {
+      "delete": {
+        "tags": ["Workout"],
+        "summary": "Delete physical assessment",
+        "description": "Deletes an existing physical assessment by ID.",
+        "operationId": "deletePhysicalAssessment",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/config/room/{id}": {
+      "delete": {
+        "tags": ["Configuration"],
+        "summary": "Delete room",
+        "operationId": "deleteRoom",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/booking/classes/{classId}": {
+      "delete": {
+        "tags": ["Booking"],
+        "summary": "Delete a class",
+        "description": "Deletes a class and its future attendance records.",
+        "operationId": "deleteClass",
+        "parameters": [
+          {
+            "name": "classId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WorkoutProgram": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "template": { "type": "boolean" },
+          "templateName": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1
+          },
+          "memberId": { "type": "integer", "format": "int64" },
+          "setType": { "type": "string" },
+          "exerciceId": { "type": "integer", "format": "int64" },
+          "exerciceId2": { "type": "integer", "format": "int64" },
+          "exerciceId3": { "type": "integer", "format": "int64" },
+          "exerciceId4": { "type": "integer", "format": "int64" },
+          "orderNumber": { "type": "integer", "format": "int64" },
+          "workoutGroup": { "type": "string" },
+          "series": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "reps": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "load": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "reps2": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "load2": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "reps3": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "load3": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "reps4": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "load4": { "type": "string", "maxLength": 15, "minLength": 1 },
+          "companyGroupId": { "type": "integer", "format": "int64" },
+          "annotation": { "type": "string" }
+        },
+        "required": ["setType", "template", "templateName"]
+      },
+      "WorkoutFlow": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "companyGroupId": { "type": "integer", "format": "int64" },
+          "name": { "type": "string" },
+          "config": { "type": "string" }
+        }
+      },
+      "MemberObs": {
+        "type": "object",
+        "properties": {
+          "memberId": { "type": "integer", "format": "int64" },
+          "instructorId": { "type": "integer", "format": "int64" },
+          "workoutObs": { "type": "string" },
+          "instructorObs": { "type": "string" },
+          "workoutStartDate": { "type": "string", "format": "date-time" },
+          "workoutEndDate": { "type": "string", "format": "date-time" },
+          "physicalAssessmentExpiration": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "medicalAssessmentExpiration": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nutrition": { "type": "string" },
+          "workoutTargetSession": { "type": "integer", "format": "int64" }
+        }
+      },
+      "Exercise": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string", "maxLength": 100, "minLength": 1 },
+          "groupName": { "type": "string" },
+          "videoLink": { "type": "string" }
+        },
+        "required": ["groupName", "name"]
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "description": { "type": "string", "maxLength": 200, "minLength": 1 },
+          "value": { "type": "number" },
+          "dueDate": { "type": "string", "format": "date" },
+          "paidDate": { "type": "string", "format": "date" },
+          "creationDate": { "type": "string", "format": "date" },
+          "paid": { "type": "boolean" },
+          "detail": { "type": "string" },
+          "chartAccount": { "type": "integer", "format": "int64" },
+          "unit": { "type": "integer", "format": "int64" },
+          "bankId": { "type": "integer", "format": "int64" },
+          "methodPayment": { "type": "string" },
+          "extDoc": { "type": "string" },
+          "openFinnaceId": { "type": "string" },
+          "repeat": { "type": "integer", "format": "int32" },
+          "saveOpenFinanceRule": { "type": "boolean" }
+        },
+        "required": ["chartAccount", "description", "dueDate", "unit", "value"]
+      },
+      "UpdateContract": {
+        "type": "object",
+        "description": "DTO for updating contract payment method and card data",
+        "properties": {
+          "methodPayment": {
+            "type": "string",
+            "description": "Payment method code (e.g., CC, BT, PIXA, DN, etc.)",
+            "example": "CC"
+          },
+          "card": {
+            "type": "string",
+            "description": "Card brand (e.g., visa, mastercard)",
+            "example": "visa",
+            "maxLength": 40,
+            "minLength": 3
+          },
+          "cardNumber": {
+            "type": "string",
+            "description": "Card number (for CC payment method)",
+            "example": 4111111111111111
+          },
+          "expiryDate": {
+            "type": "string",
+            "description": "Card expiry date in YYYYMM format",
+            "example": 202712,
+            "pattern": "^\\d{6}$"
+          },
+          "ccv": {
+            "type": "string",
+            "description": "Card security code (CVV/CVC)",
+            "example": 123
+          },
+          "redirectUri": {
+            "type": "string",
+            "description": "Redirect URI for payment processing callbacks"
+          }
+        },
+        "required": ["methodPayment"]
+      },
+      "UpdateContractBalance": {
+        "type": "object",
+        "description": "DTO for updating contract attendance balance",
+        "properties": {
+          "balance": { "type": "integer", "format": "int64", "minimum": 0 }
+        },
+        "required": ["balance"]
+      },
+      "NewContract": {
+        "type": "object",
+        "properties": {
+          "idMember": { "type": "integer", "format": "int64" },
+          "idContract": { "type": "integer", "format": "int64" },
+          "plan": { "type": "integer", "format": "int64" },
+          "planExtId": { "type": "string" },
+          "startDate": { "type": "string", "format": "date-time" },
+          "duedateOption": { "type": "integer", "format": "int64" },
+          "promoCode": { "type": "string" },
+          "installments": { "type": "integer", "format": "int32" },
+          "installreg": { "type": "integer", "format": "int32" },
+          "installman": { "type": "integer", "format": "int32" },
+          "salesId": { "type": "integer", "format": "int64" },
+          "methodPayment": { "type": "string" },
+          "card": { "type": "string", "maxLength": 40, "minLength": 3 },
+          "cardTid": { "type": "string" },
+          "cardNumber": { "type": "string" },
+          "expiryDate": { "type": "string", "pattern": "^\\d{6}$" },
+          "ccv": { "type": "string" },
+          "paymentProfileId": { "type": "integer", "format": "int64" },
+          "isMigration": { "type": "boolean" },
+          "redirect_uri": { "type": "string" },
+          "signatureBase64": { "type": "string" }
+        },
+        "required": ["idMember", "methodPayment"]
+      },
+      "Unit": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string" },
+          "company": { "type": "string" },
+          "trade": { "type": "string" },
+          "register": { "type": "string" },
+          "address": { "type": "string" },
+          "state": { "type": "string" },
+          "city": { "type": "string" },
+          "zipCode": { "type": "string" },
+          "neighborhood": { "type": "string" },
+          "phone": { "type": "string" },
+          "manager": { "type": "string" },
+          "visaAquirer": { "type": "string" },
+          "masterAquirer": { "type": "string" },
+          "amexAquirer": { "type": "string" },
+          "eloAquirer": { "type": "string" },
+          "hiperAquirer": { "type": "string" },
+          "dinnersAquirer": { "type": "string" },
+          "extId": { "type": "string" },
+          "latitude": { "type": "string" },
+          "longitude": { "type": "string" },
+          "municipalTaxNumber": { "type": "string" },
+          "regionalTaxNumber": { "type": "string" },
+          "taxRegime": { "type": "string" },
+          "specialTaxRegime": { "type": "string" },
+          "cityCode": { "type": "string" },
+          "cityServiceCode": { "type": "string" },
+          "federalServiceCode": { "type": "number", "format": "double" },
+          "cnaeCode": { "type": "string" },
+          "issRate": { "type": "number", "format": "double" },
+          "irRate": { "type": "number", "format": "double" },
+          "pisRate": { "type": "number", "format": "double" },
+          "cofinsRate": { "type": "number", "format": "double" },
+          "csllRate": { "type": "number", "format": "double" },
+          "showOnSite": { "type": "boolean" },
+          "autoInvoiceRecurring": { "type": "string" },
+          "autoInvoiceCreditCard": { "type": "string" },
+          "autoInvoiceDebitCard": { "type": "string" },
+          "autoInvoiceTransfer": { "type": "string" },
+          "autoInvoiceSlip": { "type": "string" },
+          "autoInvoiceCheck": { "type": "string" },
+          "autoInvoiceMoney": { "type": "string" },
+          "onlineInfo": { "type": "string" },
+          "timeZone": { "type": "string" },
+          "autoInvoiceBankTransfer": { "type": "string" },
+          "pixAcquirer": { "type": "string" },
+          "nfeprovider": { "type": "string" }
+        }
+      },
+      "SalesFunnel": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string", "maxLength": 30, "minLength": 1 },
+          "aiQualification": { "type": "string" },
+          "orderNumber": { "type": "integer", "format": "int64" }
+        },
+        "required": ["name", "orderNumber"]
+      },
+      "RoomDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "unit": { "type": "integer", "format": "int64" },
+          "name": { "type": "string" },
+          "layout": { "type": "string" },
+          "positions": { "type": "integer", "format": "int32" }
+        }
+      },
+      "Product": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "code": { "type": "string", "maxLength": 30, "minLength": 1 },
+          "name": { "type": "string", "maxLength": 60, "minLength": 1 },
+          "category": { "type": "string", "maxLength": 30, "minLength": 1 },
+          "price": { "type": "number", "format": "double" },
+          "buyPrice": { "type": "number", "format": "double" },
+          "stock": { "type": "number", "format": "double" },
+          "minStock": { "type": "number", "format": "double" },
+          "controlStock": { "type": "boolean" },
+          "allowSellNoStock": { "type": "boolean" },
+          "unit": { "type": "integer", "format": "int64" },
+          "chartAccountId": { "type": "integer", "format": "int64" }
+        },
+        "required": ["chartAccountId", "code", "name", "price", "unit"]
+      },
+      "Plan": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "unit_id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string", "maxLength": 40, "minLength": 3 },
+          "price": { "type": "number" },
+          "months": { "type": "integer", "format": "int64" },
+          "registrationFee": { "type": "number" },
+          "graceRegistrationFee": { "type": "integer", "format": "int64" },
+          "maintenanceFee": { "type": "number" },
+          "graceMaintenanceFee": { "type": "integer", "format": "int64" },
+          "renew": { "type": "boolean" },
+          "chartAccountId": { "type": "integer", "format": "int64" },
+          "accessfrom": { "type": "string", "format": "date-time" },
+          "accessto": { "type": "string", "format": "date-time" },
+          "extId": { "type": "string", "maxLength": 10, "minLength": 0 },
+          "type": { "type": "string", "maxLength": 3, "minLength": 0 },
+          "nsessions": { "type": "integer", "format": "int64" },
+          "duration": { "type": "integer", "format": "int64" },
+          "cycle": { "type": "string", "maxLength": 1, "minLength": 0 },
+          "installreg": { "type": "integer", "format": "int64" },
+          "installman": { "type": "integer", "format": "int64" },
+          "showOnSite": { "type": "boolean" },
+          "onlinePaymentType": {
+            "type": "string",
+            "maxLength": 2147483647,
+            "minLength": 2
+          },
+          "mondayRestriction": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "tuesdayRestriction": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "wednesdayRestriction": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "thursdayRestriction": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "fridayRestriction": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "saturdayRestriction": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "sundayRestriction": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "readjustmentIndex": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "dependents": { "type": "integer", "format": "int64" },
+          "allowedClasses": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 0
+          },
+          "allowedUnits": { "type": "string", "maxLength": 2, "minLength": 0 },
+          "allowedTurnStile": {
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 0
+          },
+          "onlineDescription": {
+            "type": "string",
+            "maxLength": 512,
+            "minLength": 0
+          },
+          "renovationFee": { "type": "string", "maxLength": 2, "minLength": 0 },
+          "checkinRestriction": { "type": "boolean" },
+          "maxCheckIns": { "type": "integer", "format": "int64" },
+          "maxFreezeDays": { "type": "integer", "format": "int64" },
+          "minFreezeDays": { "type": "integer", "format": "int64" },
+          "countActiveCustomer": { "type": "boolean" },
+          "firstInstallment": { "type": "number" }
+        },
+        "required": ["chartAccountId", "cycle", "name", "type", "unit_id"]
+      },
+      "Offer": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "code": { "type": "string", "maxLength": 30, "minLength": 1 },
+          "description": { "type": "string", "maxLength": 60, "minLength": 1 },
+          "active": { "type": "boolean" },
+          "discount": { "type": "number", "format": "double" },
+          "discountFee": { "type": "number", "format": "double" },
+          "maintanceDiscountFee": { "type": "number", "format": "double" },
+          "max": { "type": "integer", "format": "int64" },
+          "used": { "type": "integer", "format": "int64" },
+          "type": { "type": "string" },
+          "firstInstallment": { "type": "number", "format": "double" },
+          "secondInstallment": { "type": "number", "format": "double" },
+          "thirdInstallment": { "type": "number", "format": "double" },
+          "fourthInstallment": { "type": "number", "format": "double" },
+          "unitId": { "type": "integer", "format": "int64" }
+        },
+        "required": ["code", "description", "max"]
+      },
+      "ChartAccount": {
+        "type": "object",
+        "example": {
+          "id": 0,
+          "name": "string",
+          "debit": true,
+          "assets": true,
+          "parent": 0,
+          "type": "string"
+        },
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string", "maxLength": 40, "minLength": 2 },
+          "debit": { "type": "boolean" },
+          "assets": { "type": "boolean" },
+          "parent": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Parent account ID (0 or null for no parent)",
+            "example": 0
+          },
+          "type": { "type": "string" }
+        },
+        "required": ["name"]
+      },
+      "Bank": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "unitId": { "type": "integer", "format": "int64" },
+          "code": { "type": "string", "maxLength": 20, "minLength": 1 },
+          "name": { "type": "string", "maxLength": 20, "minLength": 1 },
+          "agency": { "type": "string", "maxLength": 20, "minLength": 1 },
+          "account": { "type": "string", "maxLength": 20, "minLength": 1 },
+          "debitServiceCode": { "type": "string" },
+          "waitDebitConfirmation": { "type": "boolean" },
+          "sequenceFile": { "type": "integer", "format": "int64" },
+          "balance": { "type": "number", "format": "double" }
+        },
+        "required": ["account", "agency", "code", "name", "unitId"]
+      },
+      "AClass": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "unit": { "type": "integer", "format": "int64" },
+          "time": { "type": "string", "format": "date-time" },
+          "endTime": { "type": "string", "format": "date-time" },
+          "name": { "type": "string", "maxLength": 120, "minLength": 2 },
+          "dayOfWeek": { "type": "integer", "format": "int32" },
+          "instructorId": { "type": "integer", "format": "int64" },
+          "instructorName": { "type": "string" },
+          "instructorId2": { "type": "integer", "format": "int64" },
+          "instructorName2": { "type": "string" },
+          "credits": { "type": "integer", "format": "int32" },
+          "description": { "type": "string", "maxLength": 256, "minLength": 0 },
+          "capacity": { "type": "integer", "format": "int32" },
+          "category": { "type": "string", "pattern": "common|team|crossfit" },
+          "crossFitWod": { "type": "string", "maxLength": 795, "minLength": 0 },
+          "crossFitType": {
+            "type": "string",
+            "pattern": "time|repeats|roundsRepets"
+          },
+          "showOnSite": { "type": "boolean" },
+          "waitingList": { "type": "boolean" },
+          "minAge": { "type": "integer", "format": "int32" },
+          "maxAge": { "type": "integer", "format": "int32" },
+          "teamWeekDays": { "type": "string", "maxLength": 40, "minLength": 0 },
+          "bookPosition": { "type": "boolean" },
+          "roomId": { "type": "integer", "format": "int64" },
+          "liveStream": { "type": "boolean" },
+          "liveStreamConfig": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 0
+          },
+          "streamType": { "type": "string", "maxLength": 40, "minLength": 0 },
+          "streamProviderId": { "type": "integer", "format": "int64" },
+          "graduationActivity": { "type": "string" },
+          "bannerImg": { "type": "string" }
+        },
+        "required": ["name", "unit"]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string", "maxLength": 100, "minLength": 3 },
+          "surname": { "type": "string", "maxLength": 100, "minLength": 2 },
+          "email": { "type": "string", "format": "email" },
+          "changePassword": { "type": "boolean" },
+          "status": { "type": "boolean" },
+          "userType": { "type": "string", "pattern": "S|N" },
+          "companyGroupId": { "type": "integer", "format": "int64" },
+          "lastLogin": { "type": "string", "format": "date-time" },
+          "unit": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Unit" }
+          },
+          "feedPortifolio": { "type": "boolean" },
+          "cellPhone": { "type": "string", "maxLength": 20, "minLength": 0 },
+          "docId": { "type": "string", "maxLength": 25, "minLength": 0 },
+          "birthDate": { "type": "string", "format": "date-time" },
+          "address": { "type": "string", "maxLength": 100, "minLength": 0 },
+          "city": { "type": "string", "maxLength": 40, "minLength": 0 },
+          "state": { "type": "string", "maxLength": 40, "minLength": 0 },
+          "zipcode": { "type": "string", "maxLength": 10, "minLength": 0 },
+          "authenticationMode": {
+            "type": "string",
+            "pattern": "password|emailProvider"
+          },
+          "accessRole": { "type": "integer", "format": "int64" },
+          "accessRoleValid": { "type": "boolean" }
+        },
+        "required": [
+          "authenticationMode",
+          "email",
+          "name",
+          "surname",
+          "userType"
+        ]
+      },
+      "WorkoutHistory": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "description": { "type": "string", "maxLength": 30, "minLength": 1 },
+          "memberId": { "type": "integer", "format": "int64" },
+          "workoutObs": { "type": "string" },
+          "instructorObs": { "type": "string" },
+          "workoutStartDate": { "type": "string", "format": "date-time" },
+          "workoutEndDate": { "type": "string", "format": "date-time" },
+          "instructorId": { "type": "integer", "format": "int64" }
+        },
+        "required": ["description", "memberId"]
+      },
+      "PhysicalAssessment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "appraisalDate": { "type": "string", "format": "date-time" },
+          "memberId": { "type": "integer", "format": "int64" },
+          "memberAge": { "type": "integer", "format": "int64" },
+          "gender": {
+            "type": "string",
+            "maxLength": 1,
+            "minLength": 1,
+            "pattern": "M|F"
+          },
+          "appraiser": { "type": "string" },
+          "anamnesisq1": { "type": "string" },
+          "anamnesisq2": { "type": "string" },
+          "anamnesisq3": { "type": "string" },
+          "anamnesisq4": { "type": "string" },
+          "anamnesisq5": { "type": "string" },
+          "anamnesisq6": { "type": "string" },
+          "parq1": { "type": "boolean" },
+          "parq2": { "type": "boolean" },
+          "parq3": { "type": "boolean" },
+          "parq4": { "type": "boolean" },
+          "parq5": { "type": "boolean" },
+          "parq6": { "type": "boolean" },
+          "parq7": { "type": "boolean" },
+          "weight": { "type": "number", "format": "double" },
+          "physicalactivity": { "type": "integer", "format": "int64" },
+          "familyhistory": { "type": "integer", "format": "int64" },
+          "smoking": { "type": "integer", "format": "int64" },
+          "cholesterol": { "type": "integer", "format": "int64" },
+          "systolicpersal": { "type": "integer", "format": "int64" },
+          "neck": { "type": "number", "format": "double" },
+          "shouder": { "type": "number", "format": "double" },
+          "relaxedleftarm": { "type": "number", "format": "double" },
+          "relaxedrightarm": { "type": "number", "format": "double" },
+          "contractedleftarm": { "type": "number", "format": "double" },
+          "contractedrightarm": { "type": "number", "format": "double" },
+          "forearm": { "type": "number", "format": "double" },
+          "forearmleft": { "type": "number", "format": "double" },
+          "abdomen": { "type": "number", "format": "double" },
+          "chestrelaxed": { "type": "number", "format": "double" },
+          "toraxinspired": { "type": "number", "format": "double" },
+          "waist": { "type": "number", "format": "double" },
+          "hip": { "type": "number", "format": "double" },
+          "thigh": { "type": "number", "format": "double" },
+          "thighleft": { "type": "number", "format": "double" },
+          "calf": { "type": "number", "format": "double" },
+          "calfleft": { "type": "number", "format": "double" },
+          "bistyloid": { "type": "number", "format": "double" },
+          "diameterhandle": { "type": "number", "format": "double" },
+          "diameterfemoral": { "type": "number", "format": "double" },
+          "weightc": { "type": "number", "format": "double" },
+          "tall": { "type": "number", "format": "double" },
+          "idealfat": { "type": "number", "format": "double" },
+          "foldprotocol": { "type": "integer", "format": "int64" },
+          "subscapularis": { "type": "number", "format": "double" },
+          "tricipital": { "type": "number", "format": "double" },
+          "midaxillary": { "type": "number", "format": "double" },
+          "suprailiac": { "type": "number", "format": "double" },
+          "breastplate": { "type": "number", "format": "double" },
+          "abdominal": { "type": "number", "format": "double" },
+          "thighfold": { "type": "number", "format": "double" },
+          "crprotocol": { "type": "integer", "format": "int64" },
+          "cooperdistance": { "type": "number", "format": "double" },
+          "timeelapsed1mile": { "type": "number", "format": "double" },
+          "cardiacfrequency1mile": { "type": "number", "format": "double" },
+          "formulabruce": { "type": "integer", "format": "int64" },
+          "timeelapsedbruce": { "type": "number", "format": "double" },
+          "bruce1": { "type": "number", "format": "double" },
+          "bruce2": { "type": "number", "format": "double" },
+          "bruce3": { "type": "number", "format": "double" },
+          "bruce4": { "type": "number", "format": "double" },
+          "bruce5": { "type": "number", "format": "double" },
+          "bruce6": { "type": "number", "format": "double" },
+          "bruce7": { "type": "number", "format": "double" },
+          "finalGradient": { "type": "integer", "format": "int64" },
+          "balkeware1": { "type": "number", "format": "double" },
+          "balkeware2": { "type": "number", "format": "double" },
+          "balkeware3": { "type": "number", "format": "double" },
+          "balkeware4": { "type": "number", "format": "double" },
+          "balkeware5": { "type": "number", "format": "double" },
+          "balkeware6": { "type": "number", "format": "double" },
+          "balkeware7": { "type": "number", "format": "double" },
+          "balkeware8": { "type": "number", "format": "double" },
+          "balkeware9": { "type": "number", "format": "double" },
+          "ellestad1": { "type": "number", "format": "double" },
+          "ellestad2": { "type": "number", "format": "double" },
+          "ellestad3": { "type": "number", "format": "double" },
+          "ellestad4": { "type": "number", "format": "double" },
+          "ellestad5": { "type": "number", "format": "double" },
+          "ellestad6": { "type": "number", "format": "double" },
+          "ellestad7": { "type": "number", "format": "double" },
+          "ellestad8": { "type": "number", "format": "double" },
+          "timeelapsedellestad": { "type": "number", "format": "double" },
+          "astradwatts": { "type": "integer", "format": "int64" },
+          "astrad1cardiac": { "type": "number", "format": "double" },
+          "astrad1bloodpressure": { "type": "number", "format": "double" },
+          "astrad2cardiac": { "type": "number", "format": "double" },
+          "astrad2bloodpressure": { "type": "number", "format": "double" },
+          "astrad3cardiac": { "type": "number", "format": "double" },
+          "astrad3bloodpressure": { "type": "number", "format": "double" },
+          "astrad4cardiac": { "type": "number", "format": "double" },
+          "astrad4bloodpressure": { "type": "number", "format": "double" },
+          "astrad5cardiac": { "type": "number", "format": "double" },
+          "astrad5bloodpressure": { "type": "number", "format": "double" },
+          "pushups": { "type": "integer", "format": "int64" },
+          "abdominalr": { "type": "integer", "format": "int64" },
+          "coronaryRisk": { "type": "integer", "format": "int64" },
+          "waistVsHipRisk": { "type": "number", "format": "double" },
+          "imc": { "type": "number", "format": "double" },
+          "bodyFat": { "type": "number", "format": "double" },
+          "bodyMass": { "type": "number", "format": "double" },
+          "bodyFatMass": { "type": "number", "format": "double" },
+          "vo2Max": { "type": "number", "format": "double" },
+          "wells": { "type": "number", "format": "double" },
+          "feetfront": { "type": "string" },
+          "shinbone": { "type": "string" },
+          "kneespatellafront": { "type": "string" },
+          "hippelvisfront": { "type": "string" },
+          "eiascrystalline": { "type": "string" },
+          "shoulderfront": { "type": "string" },
+          "trunk": { "type": "string" },
+          "clavicle": { "type": "string" },
+          "neckcervical": { "type": "string" },
+          "headfront": { "type": "string" },
+          "feetankleright": { "type": "string" },
+          "kneesright": { "type": "string" },
+          "hippelvisright": { "type": "string" },
+          "lumbarspineright": { "type": "string" },
+          "thoracicspineright": { "type": "string" },
+          "cervicalspineright": { "type": "string" },
+          "shoulderright": { "type": "string" },
+          "headright": { "type": "string" },
+          "feetankleposterior": { "type": "string" },
+          "shinboneposterior": { "type": "string" },
+          "kneesposterior": { "type": "string" },
+          "eipscrystalline": { "type": "string" },
+          "lumbarspineposterior": { "type": "string" },
+          "thoracicspineposterior": { "type": "string" },
+          "cervicalspineposterior": { "type": "string" },
+          "shoulderposteriorposterior": { "type": "string" },
+          "mmssposterior": { "type": "string" },
+          "leftscapula": { "type": "string" },
+          "rightcapula": { "type": "string" },
+          "headposterior": { "type": "string" },
+          "feetankleleft": { "type": "string" },
+          "kneesleft": { "type": "string" },
+          "hippelvisleft": { "type": "string" },
+          "lumbarspineleft": { "type": "string" },
+          "thoracicspineleft": { "type": "string" },
+          "cervicalspineleft": { "type": "string" },
+          "shoulderleft": { "type": "string" },
+          "headleft": { "type": "string" },
+          "mmssfront": { "type": "string" }
+        }
+      },
+      "NewMember": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string", "maxLength": 60, "minLength": 0 },
+          "gender": {
+            "type": "string",
+            "maxLength": 1,
+            "minLength": 0,
+            "pattern": "M|F|J"
+          },
+          "cpf": { "type": "string", "maxLength": 14, "minLength": 0 },
+          "email": { "type": "string", "maxLength": 60, "minLength": 0 },
+          "birthDay": { "type": "string", "format": "date-time" },
+          "phoneNumber": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 10,
+            "pattern": "^\\+[0-9]{9,19}$"
+          },
+          "cellPhoneNumber": {
+            "type": "string",
+            "maxLength": 20,
+            "minLength": 10,
+            "pattern": "^\\+[0-9]{9,19}$"
+          },
+          "responsible": { "type": "string", "maxLength": 60, "minLength": 0 },
+          "source": {
+            "type": "string",
+            "pattern": "email|facebook|google|instagram|youtube|organic|indication|localworker|localresident|magazine|others"
+          },
+          "gympassID": { "type": "string" },
+          "mrkoptin": { "type": "string" },
+          "zipCode": { "type": "string", "maxLength": 14, "minLength": 0 },
+          "address": { "type": "string", "maxLength": 100, "minLength": 0 },
+          "complement": { "type": "string", "maxLength": 40, "minLength": 0 },
+          "state": { "type": "string", "maxLength": 25, "minLength": 0 },
+          "neighborhood": { "type": "string", "maxLength": 60, "minLength": 0 },
+          "city": { "type": "string", "maxLength": 45, "minLength": 0 },
+          "plan": { "type": "integer", "format": "int64" },
+          "planExtId": { "type": "string" },
+          "startDate": { "type": "string", "format": "date-time" },
+          "promoCode": { "type": "string" },
+          "installments": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "installreg": { "type": "integer", "format": "int32", "minimum": 1 },
+          "installman": { "type": "integer", "format": "int32", "minimum": 1 },
+          "salesId": { "type": "integer", "format": "int64" },
+          "methodPayment": {
+            "type": "string",
+            "pattern": "CC|ECC|ECD|DN|BL|CH|BT|PIXA|DC"
+          },
+          "card": { "type": "string", "maxLength": 40, "minLength": 3 },
+          "cardTid": { "type": "string" },
+          "cardNumber": { "type": "string" },
+          "ccv": { "type": "string" },
+          "expiryDate": { "type": "string", "pattern": "^\\d{6}$" },
+          "rg": { "type": "string", "maxLength": 12, "minLength": 5 },
+          "redirect_uri": { "type": "string" },
+          "signatureBase64": { "type": "string" }
+        },
+        "required": ["methodPayment", "name"]
+      },
+      "PayInvoiceDTO": {
+        "type": "object",
+        "properties": {
+          "methodPayment": { "type": "string" },
+          "cardNumber": { "type": "string" },
+          "ccv": { "type": "string" },
+          "expiryDate": { "type": "string" },
+          "card": { "type": "string" },
+          "redirect_uri": { "type": "string" }
+        },
+        "required": ["methodPayment"]
+      },
+      "NewOnlineMember": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "pattern": "email|facebook|google|instagram|youtube|organic|indication|localworker|localresident|magazine|others"
+          },
+          "unit": { "type": "integer", "format": "int64" },
+          "plan": { "type": "integer", "format": "int64" },
+          "planExtId": { "type": "string" },
+          "promoCode": { "type": "string" },
+          "installments": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+          },
+          "installreg": { "type": "integer", "format": "int32", "minimum": 1 },
+          "installman": { "type": "integer", "format": "int32", "minimum": 1 },
+          "methodPayment": {
+            "type": "string",
+            "pattern": "CC|ECC|ECD|DN|BL|CH|BT|PIXA|DC"
+          },
+          "card": { "type": "string", "maxLength": 40, "minLength": 3 },
+          "cardNumber": { "type": "string" },
+          "ccv": { "type": "string" },
+          "expiryDate": { "type": "string", "pattern": "^\\d{6}$" },
+          "prospectId": { "type": "integer", "format": "int64" },
+          "redirect_uri": { "type": "string" },
+          "signatureBase64": { "type": "string" }
+        },
+        "required": ["methodPayment", "prospectId"]
+      },
+      "AddAddOnRequestDTO": {
+        "type": "object",
+        "properties": {
+          "addOnPlanIds": {
+            "type": "array",
+            "description": "List of addOn plan IDs to add to the contract",
+            "example": [456, 789],
+            "items": { "type": "integer", "format": "int64" },
+            "maxItems": 2147483647,
+            "minItems": 1
+          },
+          "proRata": {
+            "type": "boolean",
+            "description": "If true, calculates pro-rata value based on days until next payment. If false, adds full addon value.",
+            "example": true
+          }
+        },
+        "required": ["addOnPlanIds"]
+      },
+      "TokenRequest": {
+        "type": "object",
+        "properties": {
+          "grantType": {
+            "type": "string",
+            "default": "password",
+            "description": "Grant type. Defaults to 'password' if omitted. Allowed values: 'password' (default), 'google', 'microsoft', 'apple'.",
+            "example": "password"
+          },
+          "username": { "type": "string" },
+          "password": { "type": "string" },
+          "code": { "type": "string" },
+          "redirectUri": { "type": "string" },
+          "idToken": { "type": "string" },
+          "resetPasswd": { "type": "boolean" }
+        }
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email", "minLength": 1 }
+        },
+        "required": ["email"]
+      },
+      "PasswordChangeRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "minLength": 1 },
+          "password": { "type": "string", "minLength": 1 }
+        },
+        "required": ["email", "password"]
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer", "format": "int32", "minimum": 0 },
+          "size": { "type": "integer", "format": "int32", "minimum": 1 },
+          "sort": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "PageResponseWorkoutHistory": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WorkoutHistory" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "PageResponseWorkoutProgram": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WorkoutProgram" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "PageResponseWorkoutFlow": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/WorkoutFlow" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "PageResponsePhysicalAssessment": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/PhysicalAssessment" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "PageResponseExercise": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Exercise" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "Greeting": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "content": { "type": "string" }
+        }
+      },
+      "StatsView": {
+        "type": "object",
+        "properties": {
+          "goalNewContract": { "type": "integer", "format": "int64" },
+          "goalActiveCustomer": { "type": "integer", "format": "int64" },
+          "goalConversion": { "type": "number", "format": "double" },
+          "goalNps": { "type": "number", "format": "double" },
+          "goalChurnRate": { "type": "number", "format": "double" },
+          "activeMemberByMonth": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "endContracts": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "giveUpRisk": { "type": "integer", "format": "int64" },
+          "totalActive": { "type": "integer", "format": "int64" },
+          "totalActiveAggregator": { "type": "integer", "format": "int64" },
+          "totalActiveContracts": { "type": "integer", "format": "int64" },
+          "totalFutureBeginning": { "type": "integer", "format": "int64" },
+          "exerciseDistribuiton": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "total": { "type": "integer", "format": "int64" },
+          "totalReturnedMember": { "type": "integer", "format": "int64" },
+          "totalRenovationMonth": { "type": "integer", "format": "int64" },
+          "totalMigration": { "type": "integer", "format": "int64" },
+          "totalNewContract": { "type": "integer", "format": "int64" },
+          "churnRate": { "type": "number", "format": "double" },
+          "totalFinishedContract": { "type": "integer", "format": "int64" },
+          "averageContractTerm": { "type": "number", "format": "double" },
+          "pendingPaymentTotal": { "type": "integer", "format": "int64" },
+          "pendingPaymentRadio": { "type": "number", "format": "double" },
+          "renovationRadio": { "type": "number", "format": "double" },
+          "totalNPS": { "type": "number", "format": "double" },
+          "attendanceAvg": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "checkInAvg": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "avgTicket": { "type": "number", "format": "double" },
+          "avgCost": { "type": "number", "format": "double" },
+          "contractsPlan": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "newContracts": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "totalCancellation": { "type": "integer", "format": "int64" },
+          "totalVisitor": { "type": "integer", "format": "int64" },
+          "totalNewMemberMonth": { "type": "integer", "format": "int64" },
+          "male": { "type": "integer", "format": "int64" },
+          "female": { "type": "integer", "format": "int64" },
+          "locations": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "upToAge15": { "type": "integer", "format": "int64" },
+          "upToAge19": { "type": "integer", "format": "int64" },
+          "upToAge29": { "type": "integer", "format": "int64" },
+          "upToAge39": { "type": "integer", "format": "int64" },
+          "upToAge49": { "type": "integer", "format": "int64" },
+          "upToAge59": { "type": "integer", "format": "int64" },
+          "olderThanAge60": { "type": "integer", "format": "int64" }
+        }
+      },
+      "PageResponseObject[]": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "GoalView": {
+        "type": "object",
+        "properties": {
+          "revenueGoal": { "type": "number", "format": "double" },
+          "newContractsGoal": { "type": "integer", "format": "int64" },
+          "activeMembersGoal": { "type": "integer", "format": "int64" },
+          "conversionGoal": { "type": "number", "format": "double" },
+          "npsGoal": { "type": "number", "format": "double" },
+          "cancellationGoal": { "type": "number", "format": "double" },
+          "leads": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "leadSource": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "prospectSource": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "activeMembers": { "type": "integer", "format": "int64" },
+          "newContracts": { "type": "integer", "format": "int64" },
+          "contractSalesRep": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "revenue": { "type": "number", "format": "double" },
+          "cancellation": { "type": "integer", "format": "int64" },
+          "nps": { "type": "number", "format": "double" },
+          "conversion": { "type": "number", "format": "double" },
+          "actions": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "salesFunnel": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "products": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          }
+        }
+      },
+      "FinantialView": {
+        "type": "object",
+        "properties": {
+          "revenue": { "type": "number" },
+          "pendingRevenue": { "type": "number" },
+          "forecastRevenue": { "type": "number" },
+          "paidExpense": { "type": "number" },
+          "chartAccountDebit": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "chartAccountRevenue": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "paymentMethodProduct": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "paymentMethod": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "balance": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          }
+        }
+      },
+      "CRMView": {
+        "type": "object",
+        "properties": {
+          "madeCallsTotal": { "type": "integer", "format": "int64" },
+          "protifolio": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "madeCalls": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "visiting": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "protifolioInstructor": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "newMembersBySales": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "renovationsBySales": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "renovationsByInstructor": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "physicalAssessment": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "awayBySales": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "awayByInstructor": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "pendingPaymentBySales": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "pendingPaymentByInstructor": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "workoutByInstructor": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "memberWithNoWorkout": { "type": "integer", "format": "int64" },
+          "dueWorkoutByInstructor": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          },
+          "pendingCalls": {
+            "type": "array",
+            "items": { "type": "array", "items": {} }
+          }
+        }
+      },
+      "MemberPayment": {
+        "type": "object",
+        "properties": {
+          "chartAccountId": { "type": "integer", "format": "int64" },
+          "paidDate": { "type": "string", "format": "date" },
+          "amount": { "type": "number", "format": "double" },
+          "parentId": { "type": "integer", "format": "int64" },
+          "chartAccountName": { "type": "string" },
+          "parentChartAccountName": { "type": "string" },
+          "memberId": { "type": "integer", "format": "int64" },
+          "memberName": { "type": "string" }
+        }
+      },
+      "PageResponseMemberPayment": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MemberPayment" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "FinancialAccountItemDTO": {
+        "type": "object",
+        "properties": {
+          "accountId": { "type": "integer", "format": "int64" },
+          "description": { "type": "string" },
+          "dueDate": { "type": "string", "format": "date" },
+          "paidDate": { "type": "string", "format": "date" },
+          "methodPayment": { "type": "string" },
+          "value": { "type": "number" },
+          "bankId": { "type": "integer", "format": "int64" },
+          "chartAccountId": { "type": "integer", "format": "int64" },
+          "chartAccountName": { "type": "string" },
+          "debit": { "type": "boolean" },
+          "unitId": { "type": "integer", "format": "int64" },
+          "paid": { "type": "boolean" },
+          "detail": { "type": "string" }
+        }
+      },
+      "FinancialAccountsResponseDTO": {
+        "type": "object",
+        "properties": {
+          "beginBalance": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/FinancialBalanceDTO" }
+          },
+          "endBalance": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/FinancialBalanceDTO" }
+          },
+          "accounts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/FinancialAccountItemDTO" }
+          },
+          "income": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/FinancialIncomeDTO" }
+          },
+          "openFinance": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/OpenFinanceTransaction" }
+          }
+        }
+      },
+      "FinancialBalanceDTO": {
+        "type": "object",
+        "properties": { "balance": { "type": "number" } }
+      },
+      "FinancialIncomeDTO": {
+        "type": "object",
+        "properties": {
+          "entryDate": { "type": "string", "format": "date-time" },
+          "netAmount": { "type": "number" },
+          "methodPayment": { "type": "string" },
+          "bankId": { "type": "integer", "format": "int64" }
+        }
+      },
+      "OpenFinanceTransaction": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "unitId": { "type": "integer", "format": "int64" },
+          "registerDate": { "type": "string", "format": "date-time" },
+          "status": { "type": "string" },
+          "transaction": { "type": "string" }
+        }
+      },
+      "ClassAttendanceMemberDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "unit": { "type": "integer", "format": "int64" },
+          "date": { "type": "string", "format": "date-time" },
+          "time": { "type": "string", "format": "date-time" },
+          "name": { "type": "string" },
+          "dayOfWeek": { "type": "integer", "format": "int32" },
+          "memberId": { "type": "integer", "format": "int64" },
+          "instructorId": { "type": "integer", "format": "int64" }
+        }
+      },
+      "PageResponseClassAttendanceMemberDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ClassAttendanceMemberDTO" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "AttendanceDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "memberId": { "type": "integer", "format": "int64" },
+          "unitId": { "type": "integer", "format": "int64" },
+          "time": { "type": "string", "format": "date-time" },
+          "date": { "type": "string", "format": "date-time" },
+          "dayOfWeek": { "type": "integer", "format": "int32" },
+          "gympass": { "type": "boolean" },
+          "partnerAggregator": { "type": "string" },
+          "productId": { "type": "string" },
+          "contractId": { "type": "integer", "format": "int64" }
+        }
+      },
+      "PageResponseAttendanceDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AttendanceDTO" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "PageResponseProduct": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Product" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "PageResponsePlan": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Plan" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "PageResponseOffer": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Offer" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "PageResponseUser": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/User" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "ClassReservationDTO": {
+        "type": "object",
+        "properties": {
+          "classAttendanceId": { "type": "integer", "format": "int64" },
+          "name": { "type": "string" },
+          "rg": { "type": "string" },
+          "email": { "type": "string" }
+        }
+      },
+      "ClassAttendanceDTO": {
+        "type": "object",
+        "properties": {
+          "classId": { "type": "integer", "format": "int64" },
+          "className": { "type": "string" },
+          "date": { "type": "string", "format": "date-time" },
+          "time": { "type": "string", "format": "date-time" },
+          "capacity": { "type": "integer", "format": "int32" },
+          "instructorName": { "type": "string" },
+          "totalParticipants": { "type": "integer", "format": "int64" }
+        }
+      },
+      "PageResponseClassAttendanceDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ClassAttendanceDTO" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "ClassAttendanceOccupationDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "memberName": { "type": "string" },
+          "checkedIn": { "type": "boolean" }
+        }
+      }
+    },
+    "securitySchemes": {
+      "basicAuth": { "type": "http", "scheme": "basic" },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
