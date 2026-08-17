@@ -55,6 +55,17 @@ export class DeviceController {
 		return this.deviceService.register(dto);
 	}
 
+	@Get(":id/status")
+	@ApiOperation({
+		summary: "Consultar status do dispositivo",
+		description:
+			"Pública — usada pelo próprio totem (painel /admin local) para saber se já foi aprovado, sem precisar de sessão de admin.",
+	})
+	@ApiResponse({ status: 200, schema: { example: { status: "APPROVED" } } })
+	status(@Param("id") id: string) {
+		return this.deviceService.getStatus(id);
+	}
+
 	@Post("auth/login")
 	@ApiOperation({
 		summary: "Autenticar dispositivo",

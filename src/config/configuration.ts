@@ -1,4 +1,7 @@
 export default () => ({
+	cloudgym: {
+		apiBaseUrl: process.env.CLOUDGYM_API_BASE_URL,
+	},
 	s3: {
 		region: process.env.S3_REGION,
 		accessKeyId: process.env.S3_ACCESS_KEY_ID,

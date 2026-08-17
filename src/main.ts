@@ -9,15 +9,10 @@ import { Server } from "socket.io";
 import { AppModule } from "./app.module";
 import { PrismaExceptionFilter } from "./common/filters/prisma-exception.filter";
 import Default from "./config/configuration";
-import { PropsUserLogado } from "./types";
 
 declare module "fastify" {
 	interface FastifyInstance {
 		io: Server;
-	}
-
-	interface FastifyRequest {
-		userLogged: PropsUserLogado;
 	}
 
 	interface RouteOptions {

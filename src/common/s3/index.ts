@@ -65,7 +65,7 @@ export function s3(r2 = false): {
 		fileName: string;
 	}>;
 	post: (file: File, sub?: string) => Promise<string>;
-	del: (Key: string) => Promise<unknown>;
+	del: (Key: string, sub?: string) => Promise<unknown>;
 	getUrl: (Key: string, sub?: string, time?: number) => Promise<string>;
 	getSize: (Key: string, sub?: string) => Promise<number>;
 } {
@@ -172,11 +172,12 @@ export function s3(r2 = false): {
 			return name;
 		};
 
-		const del = async (Key: string) => {
+		const del = async (Key: string, sub = "") => {
 			if (Key) {
+				const keyFolder = `${sub.length > 0 ? `${sub}/` : ""}${Key}`;
 				const deleteObj = new DeleteObjectCommand({
 					Bucket: bucketName,
-					Key,
+					Key: keyFolder,
 				});
 				const res = await client.send(deleteObj);
 

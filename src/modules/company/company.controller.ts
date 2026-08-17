@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Delete,
@@ -7,9 +8,17 @@ import {
 	Patch,
 	Post,
 	Query,
+	Req,
 	UseGuards,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import {
+	ApiBearerAuth,
+	ApiBody,
+	ApiConsumes,
+	ApiOperation,
+	ApiResponse,
+} from "@nestjs/swagger";
+import type { FastifyRequest } from "fastify";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { ApiPaginatedResponse } from "@/common/decorators/api-paginated-response.decorator";
 import { ApiStandardResponse } from "@/common/decorators/api-standard-response.decorator";
@@ -88,6 +97,43 @@ export class CompanyController {
 	})
 	update(@Param("id") id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
 		return this.companyService.update(id, updateCompanyDto);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@Post(":id/logo")
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({
+		schema: { type: "object", properties: { file: { type: "string", format: "binary" } } },
+	})
+	@ApiOperation({
+		summary: "Upload do logo",
+		description: "Envia o logo (versão normal) da empresa pro S3 e salva no cadastro.",
+	})
+	@ApiResponse({ status: 200, description: "Empresa atualizada", type: Company })
+	async uploadLogo(@Param("id") id: string, @Req() req: FastifyRequest) {
+		const file = await req.file();
+		if (!file) throw new BadRequestException("Arquivo não enviado.");
+		return this.companyService.uploadLogo(id, file, false);
+	}
+
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@Post(":id/logo-negative")
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({
+		schema: { type: "object", properties: { file: { type: "string", format: "binary" } } },
+	})
+	@ApiOperation({
+		summary: "Upload do logo negativo",
+		description:
+			"Envia o logo em versão negativa (fundo escuro, usado no totem) da empresa pro S3 e salva no cadastro.",
+	})
+	@ApiResponse({ status: 200, description: "Empresa atualizada", type: Company })
+	async uploadLogoNegative(@Param("id") id: string, @Req() req: FastifyRequest) {
+		const file = await req.file();
+		if (!file) throw new BadRequestException("Arquivo não enviado.");
+		return this.companyService.uploadLogo(id, file, true);
 	}
 
 	@UseGuards(JwtAuthGuard)

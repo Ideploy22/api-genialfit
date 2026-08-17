@@ -57,6 +57,12 @@ model Company {
   colorCompany ColorCompany?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime? @updatedAt
+
+  cloudgymIntegration CloudgymIntegration?
+  members             Member[]
+  planContents        PlanContent[]
+  aggregators         Aggregator[]
+  banners             CompanyBanner[]
 }
 
 model ColorCompany {
@@ -185,4 +191,280 @@ model DeviceLog {
   @@index([createdAt])
   @@index([deviceId, createdAt])
   @@index([deviceId, event])
+}
+
+// ─── Integração CloudGym ───────────────────────────────────────────────────
+//
+// A CloudGym é a plataforma de gestão de academia que fornece a fonte de
+// verdade para plano/contrato/cobrança. Ela expõe majoritariamente endpoints
+// de escrita (criar membro, contrato, fatura) e poucos GETs (catálogos por
+// unidade, histórico). Não existe busca de membro por CPF nem listagem de
+// fatura por membro — por isso mantemos cache local (Member/Contract/Invoice)
+// alimentado por webhook, e mesclamos catálogos ao vivo (planos) com conteúdo
+// próprio (PlanContent).
+
+enum MemberStatus {
+  PROSPECT
+  ACTIVE
+  INACTIVE
+}
+
+enum ContractStatus {
+  ACTIVE
+  FROZEN
+  CANCELED
+  EXPIRED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELED
+}
+
+enum AggregatorProvider {
+  GYMPASS
+  TOTALPASS
+  WELLHUB
+}
+
+enum MemberEvent {
+  REGISTERED_TOTEM
+  SYNCED_WEBHOOK
+  LOGIN_CPF_SUCCESS
+  LOGIN_CPF_FAILED
+  LOGIN_QR_SUCCESS
+  LOGIN_QR_FAILED
+  LOGIN_AGGREGATOR_SUCCESS
+  LOGIN_AGGREGATOR_FAILED
+  WORKOUT_COMPLETED
+  INVOICE_PAID
+}
+
+model CloudgymIntegration {
+  id        String  @id @default(cuid())
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String  @unique
+
+  /// Id numérico da unidade na CloudGym
+  unitId   Int
+  /// Override de base URL; se vazio usa CLOUDGYM_API_BASE_URL
+  baseUrl  String?
+  username String
+
+  /// Senha da conta CloudGym criptografada (AES-256-GCM), nunca em texto puro
+  passwordEncrypted String
+
+  /// Comparado ao header X-Webhook-Secret nos eventos recebidos da CloudGym
+  webhookSecret String
+
+  /// Cache do bearer token obtido em POST /auth/token
+  accessToken          String?
+  accessTokenExpiresAt DateTime?
+
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Member {
+  id               String       @id @default(cuid())
+  company          Company      @relation(fields: [companyId], references: [id])
+  companyId        String
+  /// Id numérico do membro na CloudGym; nulo até a primeira sincronização
+  cloudgymMemberId Int?
+
+  cpf       String?
+  matricula String?
+  name      String
+  email     String?
+  phone     String?
+  birthDate DateTime?
+  avatar    String?
+  status    MemberStatus @default(PROSPECT)
+
+  /// Saldo de pontos de gamificação (dado próprio, sem equivalente na CloudGym)
+  points Int @default(0)
+
+  contracts          Contract[]
+  invoices           Invoice[]
+  logs               MemberLog[]
+  workoutCompletions WorkoutCompletion[]
+  aggregatorLinks    MemberAggregatorLink[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, cpf])
+  @@unique([companyId, matricula])
+  @@unique([companyId, cloudgymMemberId])
+  @@index([companyId, status])
+}
+
+model MemberLog {
+  id       String @id @default(cuid())
+  member   Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId String
+
+  /// Id do Device (totem) de onde partiu a ação, quando aplicável
+  deviceId    String?
+  event       MemberEvent
+  description String?
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([memberId, createdAt])
+  @@index([event])
+}
+
+model Contract {
+  id                 String         @id @default(cuid())
+  member             Member         @relation(fields: [memberId], references: [id])
+  memberId           String
+  cloudgymContractId Int?
+  cloudgymPlanId     Int?
+  planName           String?
+  price              Decimal?
+  status             ContractStatus @default(ACTIVE)
+  startDate          DateTime?
+  dueDay             Int?
+
+  /// Payload bruto do último evento de webhook recebido para este contrato
+  raw Json?
+
+  invoices  Invoice[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([memberId, status])
+}
+
+model Invoice {
+  id                  String        @id @default(cuid())
+  member              Member        @relation(fields: [memberId], references: [id])
+  memberId            String
+  contract            Contract?     @relation(fields: [contractId], references: [id])
+  contractId          String?
+  cloudgymInvoiceId   Int?
+  amount              Decimal
+  discount            Decimal?      @default(0)
+  punctualityDiscount Decimal?      @default(0)
+  dueDate             DateTime
+  status              InvoiceStatus @default(PENDING)
+  methodPayment       String?
+  paidAt              DateTime?
+  raw                 Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([memberId, cloudgymInvoiceId])
+  @@index([memberId, status])
+}
+
+model PlanContent {
+  // Overlay de marketing sobre um plano da CloudGym (cloudgymPlanId
+  // preenchido, preço/regras vêm ao vivo de GET /config/plans/{unitId}) OU
+  // um plano 100% local (cloudgymPlanId nulo, sem CloudGym envolvida) — usado
+  // por companies sem CloudgymIntegration. Editado pelo admin (web-genialfit).
+  id             String  @id @default(cuid())
+  company        Company @relation(fields: [companyId], references: [id])
+  companyId      String
+  cloudgymPlanId Int?
+
+  /// Nome do plano — é o nome exibido quando local; quando vinculado à
+  /// CloudGym, o nome exibido vem dela e este campo é só referência interna.
+  name String
+  /// Preço do plano local (cloudgymPlanId nulo); planos vinculados à
+  /// CloudGym têm o preço vindo ao vivo de lá, este campo fica vazio.
+  price Decimal?
+
+  description String?
+  /// Array de strings (benefícios do plano)
+  services    Json?
+  /// Desconto promocional exibido no card (%), conteúdo de marketing — não
+  /// existe como campo direto no Plan da CloudGym (lá vive em Offer).
+  discount    Int?    @default(0)
+  highlighted Boolean @default(false)
+  order       Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, cloudgymPlanId])
+}
+
+model CompanyBanner {
+  // Slide do carrossel da tela inicial (idle/attract) do totem — cada
+  // empresa tem os seus. Editado pelo admin (web-genialfit).
+  id        String  @id @default(cuid())
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+
+  title       String?
+  description String?
+  /// Key do arquivo no S3 (pasta "banners") — nulo até o upload da imagem;
+  /// o totem só exibe banners com imagem definida.
+  image String?
+
+  order  Int     @default(0)
+  active Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId, order])
+}
+
+model WorkoutCompletion {
+  id            String   @id @default(cuid())
+  member        Member   @relation(fields: [memberId], references: [id])
+  memberId      String
+  /// Id/nome do exercício vindo de GET /workout/memberWorkout/{memberId}
+  exerciseRef   String
+  pointsAwarded Int      @default(0)
+  completedAt   DateTime @default(now())
+
+  @@unique([memberId, exerciseRef, completedAt])
+  @@index([memberId, completedAt])
+}
+
+model Aggregator {
+  id        String             @id @default(cuid())
+  company   Company            @relation(fields: [companyId], references: [id])
+  companyId String
+  provider  AggregatorProvider
+  active    Boolean            @default(true)
+  createdAt DateTime           @default(now())
+
+  @@unique([companyId, provider])
+}
+
+model MemberAggregatorLink {
+  id         String             @id @default(cuid())
+  member     Member             @relation(fields: [memberId], references: [id])
+  memberId   String
+  provider   AggregatorProvider
+  /// Id do usuário no provedor (Gympass/TotalPass/Wellhub)
+  externalId String
+  createdAt  DateTime           @default(now())
+
+  @@unique([provider, externalId])
+}
+
+model CloudgymWebhookEvent {
+  /// Log bruto de todo evento recebido — auditoria/replay, já que o payload
+  /// real de webhook da CloudGym ainda não está confirmado com o cliente.
+  id         String   @id @default(cuid())
+  companyId  String?
+  eventType  String?
+  payload    Json
+  processed  Boolean  @default(false)
+  error      String?
+  receivedAt DateTime @default(now())
+
+  @@index([companyId, receivedAt])
+  @@index([processed])
 }

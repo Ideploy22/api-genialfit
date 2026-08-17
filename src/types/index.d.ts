@@ -10,3 +10,9 @@ export interface PropsDeviceLogado {
 	externalDeviceId: string;  // UUID do Electron
 	companyId: string | null;
 }
+
+export interface PropsMemberLogado {
+	memberId: string;
+	companyId: string;
+	deviceId: string;
+}

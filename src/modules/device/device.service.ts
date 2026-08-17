@@ -97,6 +97,19 @@ export class DeviceService {
 		return device;
 	}
 
+	/**
+	 * Usado pelo próprio totem (painel /admin local, sem sessão de admin) para
+	 * saber se já foi aprovado — só devolve o status, nada sensível.
+	 */
+	async getStatus(id: string) {
+		const device = await this.prisma.device.findUnique({
+			where: { id },
+			select: { status: true },
+		});
+		if (!device) throw new NotFoundException("Dispositivo não encontrado.");
+		return device;
+	}
+
 	async update(id: string, dto: UpdateDeviceDto) {
 		await this.findOne(id);
 		return this.prisma.device.update({ where: { id }, data: dto });
