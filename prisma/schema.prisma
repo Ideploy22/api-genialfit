@@ -61,6 +61,7 @@ model Company {
   cloudgymIntegration CloudgymIntegration?
   members             Member[]
   planContents        PlanContent[]
+  workoutContents     WorkoutContent[]
   aggregators         Aggregator[]
   banners             CompanyBanner[]
 }
@@ -291,6 +292,7 @@ model Member {
   invoices           Invoice[]
   logs               MemberLog[]
   workoutCompletions WorkoutCompletion[]
+  workoutContents    WorkoutContent[]
   aggregatorLinks    MemberAggregatorLink[]
 
   createdAt DateTime @default(now())
@@ -394,6 +396,42 @@ model PlanContent {
   updatedAt DateTime @updatedAt
 
   @@unique([companyId, cloudgymPlanId])
+}
+
+model WorkoutContent {
+  // Exercício do treino individual de um membro sem CloudgymIntegration
+  // (cloudgymMemberId nulo no cadastro) — fora do fluxo CloudGym por
+  // completo: não é overlay nem cache de nada da CloudGym, é o único dado de
+  // treino que esses membros têm. Cadastrado por membro (não por empresa),
+  // porque cada aluno tem seu próprio treino — hoje criado manualmente pelo
+  // admin, no futuro pelo treinador direto para aquele aluno. companyId vem
+  // junto (como em Member/PlanContent/CompanyBanner) — o membro sozinho não
+  // é chave suficiente, o par empresa+membro é que identifica o registro
+  // com segurança multi-tenant.
+  id        String  @id @default(cuid())
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+  member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  memberId  String
+
+  /// Ficha do treino (ex.: "A", "B", "Superior") — agrupa exercícios numa
+  /// rotina que o aluno alterna a cada visita (não por dia da semana fixo,
+  /// como é o padrão real de academia). Nulo = ficha única implícita.
+  label      String?
+  name       String
+  group      String?
+  series     String?
+  reps       String?
+  load       String?
+  annotation String?
+  /// Pontos de gamificação concedidos ao concluir este exercício.
+  points Int @default(10)
+  order  Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId, memberId, label, order])
 }
 
 model CompanyBanner {

@@ -1,20 +1,28 @@
 import {
+	BadRequestException,
 	Body,
 	Controller,
 	Get,
 	Param,
 	Patch,
 	Post,
+	Query,
+	Req,
 	UseGuards,
 } from "@nestjs/common";
 import {
 	ApiBearerAuth,
+	ApiBody,
+	ApiConsumes,
 	ApiOperation,
+	ApiQuery,
 	ApiResponse,
 	ApiTags,
 } from "@nestjs/swagger";
+import type { FastifyRequest } from "fastify";
 import { ClientJwtGuard } from "@/auth/client-jwt.guard";
 import { DeviceJwtGuard } from "@/auth/device-jwt.guard";
+import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { DeviceLogged } from "@/common/decorators/device-logged.decorator";
 import { MemberLogged } from "@/common/decorators/member-logged.decorator";
 import type { PropsDeviceLogado, PropsMemberLogado } from "@/types";
@@ -42,6 +50,18 @@ export class MemberController {
 		private readonly memberAuthService: MemberAuthService,
 		private readonly memberService: MemberService,
 	) {}
+
+	// ── Admin (web-genialfit) ────────────────────────────────────────────────
+
+	@UseGuards(JwtAuthGuard)
+	@Get()
+	@ApiOperation({ summary: "Listar clientes de uma empresa" })
+	@ApiQuery({ name: "companyId", required: true })
+	findByCompany(@Query("companyId") companyId: string) {
+		return this.memberService.findByCompany(companyId);
+	}
+
+	// ── Totem ────────────────────────────────────────────────────────────────
 
 	@UseGuards(DeviceJwtGuard)
 	@Post("auth/cpf")
@@ -95,6 +115,26 @@ export class MemberController {
 	@ApiResponse({ status: 200, type: MemberProfileEntity })
 	me(@MemberLogged() member: PropsMemberLogado) {
 		return this.memberService.getProfile(member.memberId);
+	}
+
+	@UseGuards(ClientJwtGuard)
+	@Post("me/avatar")
+	@ApiConsumes("multipart/form-data")
+	@ApiBody({
+		schema: { type: "object", properties: { file: { type: "string", format: "binary" } } },
+	})
+	@ApiOperation({
+		summary: "Upload da foto de perfil (câmera do totem)",
+		description:
+			"Chamado logo após POST /member/register (mesmo padrão do banner: cadastro só com dados, imagem enviada depois).",
+	})
+	async uploadAvatar(
+		@Req() req: FastifyRequest,
+		@MemberLogged() member: PropsMemberLogado,
+	) {
+		const file = await req.file();
+		if (!file) throw new BadRequestException("Arquivo não enviado.");
+		return this.memberService.uploadAvatar(member.memberId, file);
 	}
 
 	@UseGuards(ClientJwtGuard)

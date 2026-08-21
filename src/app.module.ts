@@ -14,6 +14,7 @@ import { MemberModule } from "./modules/member/member.module";
 import { MidiasModule } from "./modules/midias/midias.module";
 import { PlanModule } from "./modules/plan/plan.module";
 import { UserModule } from "./modules/user/user.module";
+import { WorkoutModule } from "./modules/workout/workout.module";
 
 @Module({
 	imports: [
@@ -29,6 +30,7 @@ import { UserModule } from "./modules/user/user.module";
 		PlanModule,
 		AggregatorModule,
 		BannerModule,
+		WorkoutModule,
 	],
 	providers: [
 		{
