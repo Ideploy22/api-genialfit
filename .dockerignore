@@ -1,0 +1,41 @@
+# Dependências e build local
+node_modules
+dist
+coverage
+
+# Variáveis de ambiente (nunca entra na imagem)
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Editor e OS
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testes
+test
+**/*.spec.ts
+**/*.e2e-spec.ts
+
+# Documentação
+README.md
+CHANGELOG.md
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
