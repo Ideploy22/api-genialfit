@@ -30,8 +30,7 @@ export class RegisterMemberDto {
 
 	@ApiProperty({
 		example: "1",
-		description:
-			"Id do plano — vem de GET /plan. Se a empresa tem CloudGym, é o id numérico de lá (como string); se não, é o id de um PlanContent local.",
+		description: "Id do plano — vem de GET /plan, sempre um PlanContent local.",
 	})
 	@IsNotEmpty()
 	@IsString()
@@ -42,21 +41,10 @@ export class RegisterMemberDto {
 		type: [String],
 		example: ["avaliacao-fisica", "aulas-coletivas"],
 		description:
-			"Extras escolhidos no passo 'Turbine seu treino' — sem equivalente na CloudGym, fica registrado localmente (Contract.raw / MemberLog).",
+			"Extras escolhidos no passo 'Turbine seu treino' — fica registrado localmente (Contract.raw / MemberLog).",
 	})
 	@IsOptional()
 	@IsArray()
 	@IsString({ each: true })
 	extras?: string[];
-
-	/**
-	 * A CloudGym exige methodPayment em POST /customer; o wizard do totem
-	 * ainda não tem um passo de pagamento (ver cadastro/store.ts) — por isso
-	 * é opcional aqui e cai num default (ver MemberAuthService) até o
-	 * frontend adicionar a etapa de cobrança.
-	 */
-	@ApiProperty({ required: false, example: "CC" })
-	@IsOptional()
-	@IsString()
-	methodPayment?: string;
 }

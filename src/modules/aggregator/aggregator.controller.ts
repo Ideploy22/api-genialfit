@@ -48,18 +48,28 @@ export class AggregatorController {
 	@ApiOperation({
 		summary: "Login do cliente via agregador (token)",
 		description:
-			"Estrutura pronta; validação real do token pendente de credenciais do provedor (ver AggregatorLoginService).",
+			"CloudGym: token é o CPF/matrícula do aluno, resolvido contra o Member já sincronizado localmente. Outros provedores: estrutura pronta, validação real pendente de credenciais (ver AggregatorLoginService).",
 	})
-	login(@Body() dto: AggregatorLoginDto) {
-		return this.loginService.login(dto.provider, dto.token);
+	login(@Body() dto: AggregatorLoginDto, @DeviceLogged() device: PropsDeviceLogado) {
+		return this.loginService.login(
+			device.companyId as string,
+			device.deviceId,
+			dto.provider,
+			dto.token,
+		);
 	}
 
 	@UseGuards(DeviceJwtGuard)
 	@ApiBearerAuth()
 	@Post("auth/login/qrcode")
 	@ApiOperation({ summary: "Login do cliente via agregador (QR Code)" })
-	loginQrCode(@Body() dto: AggregatorLoginDto) {
-		return this.loginService.login(dto.provider, dto.token);
+	loginQrCode(@Body() dto: AggregatorLoginDto, @DeviceLogged() device: PropsDeviceLogado) {
+		return this.loginService.login(
+			device.companyId as string,
+			device.deviceId,
+			dto.provider,
+			dto.token,
+		);
 	}
 
 	// ── Admin (web-genialfit) ────────────────────────────────────────────────

@@ -64,6 +64,8 @@ model Company {
   workoutContents     WorkoutContent[]
   aggregators         Aggregator[]
   banners             CompanyBanner[]
+  paymentMethods      PaymentMethodConfig[]
+  dueDayOptions       DueDayOption[]
 }
 
 model ColorCompany {
@@ -228,6 +230,7 @@ enum AggregatorProvider {
   GYMPASS
   TOTALPASS
   WELLHUB
+  CLOUDGYM
 }
 
 enum MemberEvent {
@@ -454,6 +457,64 @@ model CompanyBanner {
   updatedAt DateTime @updatedAt
 
   @@index([companyId, order])
+}
+
+enum PaymentMethodType {
+  PIX
+  DEBIT_CARD
+  CREDIT_CARD
+}
+
+enum PaymentIntegrationType {
+  MANUAL
+  PINPAD
+}
+
+model PaymentMethodConfig {
+  // Formas de pagamento aceitas no totem (fatura e, no futuro, carrinho),
+  // por empresa — cada academia liga/desliga o que aceita. `label`/
+  // `descrição`/ícone de cada tipo ficam fixos no totem (não é conteúdo de
+  // marketing), aqui só mora o que está ativo e a ordem de exibição.
+  id        String            @id @default(cuid())
+  company   Company           @relation(fields: [companyId], references: [id])
+  companyId String
+  type      PaymentMethodType
+  active    Boolean           @default(true)
+  order     Int               @default(0)
+
+  /// MANUAL = tela instrutiva no totem hoje (aluno usa a maquininha física
+  /// avulsa, sem integração nenhuma); PINPAD = seria integrado via SDK/API
+  /// do provedor — ainda não implementado, `provider`/`config` só guardam
+  /// a configuração pra quando essa integração existir de verdade.
+  integrationType PaymentIntegrationType @default(MANUAL)
+  /// Provedor do pinpad (ex.: Stone, Cielo, Rede) — só relevante quando integrationType = PINPAD.
+  provider String?
+  /// Config livre pro SDK do pinpad quando a integração existir (terminal id, etc.) — schema intencionalmente aberto.
+  config   Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, type])
+}
+
+model DueDayOption {
+  // Dias de vencimento que a empresa oferece pros alunos escolherem (tela
+  // "Alterar vencimento" no totem) — cadastrado pelo admin (web-genialfit).
+  // Sem opção nenhuma configurada, o totem não deixa escolher nada (mesmo
+  // padrão do PaymentMethodConfig: sem cadastro, sem opção pro aluno).
+  id        String  @id @default(cuid())
+  company   Company @relation(fields: [companyId], references: [id])
+  companyId String
+  /// Dia do mês (1-31).
+  day    Int
+  active Boolean @default(true)
+  order  Int     @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([companyId, day])
 }
 
 model WorkoutCompletion {

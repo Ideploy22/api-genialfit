@@ -1,32 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class PayInvoiceDto {
 	@ApiProperty({
-		example: "CC",
-		description: "Código do método de pagamento na CloudGym",
+		example: "PIXA",
+		description:
+			"Forma de pagamento informada pelo totem (Pix/Débito/Crédito são telas instrutivas — sem coleta de dado de cartão) — guardado como registro, não repassado a nenhum provedor.",
 	})
 	@IsNotEmpty()
 	@IsString()
 	methodPayment: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	cardNumber?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	ccv?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	expiryDate?: string;
-
-	@ApiProperty({ required: false })
-	@IsOptional()
-	@IsString()
-	card?: string;
 }

@@ -26,6 +26,12 @@ import type {
 	GetMemberWorkoutsResponse,
 } from "@/types/cloudgym/workout";
 
+export interface CloudgymUnitSummary {
+	id: number;
+	name: string;
+	city: string | null;
+}
+
 /**
  * Client HTTP para a API da CloudGym (plataforma de gestão da academia).
  * Cada Company tem sua própria unidade/credenciais (ver CloudgymIntegration),
@@ -94,32 +100,7 @@ export class CloudgymClientService {
 
 		const baseUrl = this.getBaseUrl(integration.baseUrl);
 		const password = decrypt(integration.passwordEncrypted);
-		const basicAuth = Buffer.from(
-			`${integration.username}:${password}`,
-		).toString("base64");
-
-		const response = await fetch(`${baseUrl}/auth/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Basic ${basicAuth}`,
-			},
-			body: JSON.stringify({
-				grantType: "password",
-				username: integration.username,
-				password,
-			}),
-		});
-
-		if (!response.ok) {
-			this.logger.error(
-				`Falha ao autenticar na CloudGym (company ${integration.companyId}): ${response.status}`,
-			);
-			throw new BadGatewayException("Não foi possível autenticar na CloudGym.");
-		}
-
-		const raw = await response.text();
-		const parsed = this.parseTokenResponse(raw);
+		const parsed = await this.fetchToken(integration.username, password, baseUrl);
 
 		const expiresAt = new Date(Date.now() + parsed.expiresIn * 1000);
 		await this.prisma.cloudgymIntegration.update({
@@ -131,6 +112,76 @@ export class CloudgymClientService {
 		});
 
 		return parsed.accessToken;
+	}
+
+	/** Núcleo de POST /auth/token — usado tanto pra integração já salva quanto pra descoberta de unidade (credenciais ainda não salvas). */
+	private async fetchToken(
+		username: string,
+		password: string,
+		baseUrl: string,
+	): Promise<{ accessToken: string; expiresIn: number }> {
+		const basicAuth = Buffer.from(`${username}:${password}`).toString("base64");
+
+		const response = await fetch(`${baseUrl}/auth/token`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Basic ${basicAuth}`,
+			},
+			body: JSON.stringify({ grantType: "password", username, password }),
+		});
+
+		if (!response.ok) {
+			this.logger.error(`Falha ao autenticar na CloudGym: ${response.status}`);
+			throw new BadGatewayException(
+				"Não foi possível autenticar na CloudGym — confira usuário e senha.",
+			);
+		}
+
+		return this.parseTokenResponse(await response.text());
+	}
+
+	/**
+	 * Autentica com usuário/senha crus (sem integração salva ainda) e lista as
+	 * unidades da conta — usado pelo admin pra descobrir o unitId numérico
+	 * certo antes de salvar a integração (o painel da CloudGym não deixa
+	 * óbvio; o `extId` alfanumérico que aparece lá é outro campo, não serve
+	 * aqui). Não persiste nada.
+	 */
+	async discoverUnits(
+		username: string,
+		password: string,
+		baseUrl?: string,
+	): Promise<CloudgymUnitSummary[]> {
+		const resolvedBaseUrl = this.getBaseUrl(baseUrl ?? null);
+		const { accessToken } = await this.fetchToken(username, password, resolvedBaseUrl);
+
+		const response = await fetch(`${resolvedBaseUrl}/config/units`, {
+			headers: { Authorization: `Bearer ${accessToken}` },
+		});
+		const raw = await response.text();
+
+		if (!response.ok) {
+			this.logger.error(`CloudGym GET /config/units -> ${response.status}: ${raw}`);
+			throw new BadGatewayException(
+				`Erro ao buscar unidades na CloudGym (${response.status}).`,
+			);
+		}
+
+		let units: { id?: number; name?: string; trade?: string; city?: string }[];
+		try {
+			units = JSON.parse(raw);
+		} catch {
+			throw new BadGatewayException("Resposta inesperada da CloudGym ao listar unidades.");
+		}
+
+		return units
+			.filter((unit): unit is typeof unit & { id: number } => unit.id !== undefined)
+			.map((unit) => ({
+				id: unit.id,
+				name: unit.name || unit.trade || `Unidade ${unit.id}`,
+				city: unit.city ?? null,
+			}));
 	}
 
 	private parseTokenResponse(raw: string): {

@@ -10,8 +10,10 @@ import { BannerModule } from "./modules/banner/banner.module";
 import { CloudgymModule } from "./modules/cloudgym/cloudgym.module";
 import { CompanyModule } from "./modules/company/company.module";
 import { DeviceModule } from "./modules/device/device.module";
+import { DueDayOptionModule } from "./modules/due-day-option/due-day-option.module";
 import { MemberModule } from "./modules/member/member.module";
 import { MidiasModule } from "./modules/midias/midias.module";
+import { PaymentMethodModule } from "./modules/payment-method/payment-method.module";
 import { PlanModule } from "./modules/plan/plan.module";
 import { UserModule } from "./modules/user/user.module";
 import { WorkoutModule } from "./modules/workout/workout.module";
@@ -31,6 +33,8 @@ import { WorkoutModule } from "./modules/workout/workout.module";
 		AggregatorModule,
 		BannerModule,
 		WorkoutModule,
+		PaymentMethodModule,
+		DueDayOptionModule,
 	],
 	providers: [
 		{

@@ -4,65 +4,21 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 import { PrismaService } from "@/database/prisma/prisma.service";
-import { CloudgymClientService } from "@/modules/cloudgym/cloudgym-client.service";
 import { CreatePlanContentDto } from "./dto/create-plan-content.dto";
 import { UpdatePlanContentDto } from "./dto/update-plan-content.dto";
 import { PlanEntity } from "./entities/plan.entity";
 
 @Injectable()
 export class PlanService {
-	constructor(
-		private readonly prisma: PrismaService,
-		private readonly cloudgymClient: CloudgymClientService,
-	) {}
+	constructor(private readonly prisma: PrismaService) {}
 
 	/**
-	 * Com CloudgymIntegration: preço e regras vêm ao vivo da CloudGym (fonte
-	 * de verdade), descrição/benefícios/destaque vêm do overlay local
-	 * (PlanContent). Sem integração: catálogo é 100% local (ver
-	 * findLocalPlans) — é o caso de empresas sem CloudGym configurada.
+	 * Catálogo de planos de uma empresa é sempre 100% local (PlanContent,
+	 * `cloudgymPlanId` nulo) — a empresa não depende de nenhum provedor
+	 * externo pra vender seus planos. CloudGym (e outros agregadores) entram
+	 * por aluno, opcionalmente, depois do cadastro — não mudam o catálogo.
 	 */
 	async findAllForCompany(companyId: string): Promise<PlanEntity[]> {
-		const integration = await this.prisma.cloudgymIntegration.findUnique({
-			where: { companyId },
-		});
-
-		if (!integration) {
-			return this.findLocalPlans(companyId);
-		}
-
-		const [cloudgymPlans, contents] = await Promise.all([
-			this.cloudgymClient.getPlans(companyId, integration.unitId),
-			this.prisma.planContent.findMany({
-				where: { companyId, cloudgymPlanId: { not: null } },
-			}),
-		]);
-
-		const contentByPlanId = new Map(contents.map((c) => [c.cloudgymPlanId, c]));
-
-		return (cloudgymPlans.content ?? [])
-			.filter((plan) => plan.id !== undefined)
-			.map((plan) => {
-				const content = contentByPlanId.get(plan.id as number);
-				return {
-					id: String(plan.id),
-					namePlan: plan.name,
-					descriptionPlan: content?.description ?? null,
-					price: plan.price ?? 0,
-					discount: content?.discount ?? undefined,
-					costBenefits: content?.highlighted ?? undefined,
-					services: (content?.services as string[] | undefined) ?? [],
-				};
-			})
-			.sort((a, b) => {
-				const orderA = contentByPlanId.get(Number(a.id))?.order ?? 0;
-				const orderB = contentByPlanId.get(Number(b.id))?.order ?? 0;
-				return orderA - orderB;
-			});
-	}
-
-	/** Catálogo de uma empresa sem CloudgymIntegration — planos 100% locais. */
-	private async findLocalPlans(companyId: string): Promise<PlanEntity[]> {
 		const contents = await this.prisma.planContent.findMany({
 			where: { companyId, cloudgymPlanId: null },
 			orderBy: { order: "asc" },

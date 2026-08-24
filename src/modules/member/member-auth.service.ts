@@ -6,21 +6,17 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { MemberEvent, MemberStatus } from "@prisma/client";
 import { PrismaService } from "@/database/prisma/prisma.service";
-import { CloudgymClientService } from "@/modules/cloudgym/cloudgym-client.service";
 import { ClientLoginDto } from "./dto/client-login.dto";
 import { ClientQrLoginDto } from "./dto/client-qr-login.dto";
 import { RegisterMemberDto } from "./dto/register-member.dto";
 
 const SESSION_EXPIRY = "30m";
-/** Usado quando o wizard de cadastro do totem ainda não coleta forma de pagamento. */
-const DEFAULT_METHOD_PAYMENT = "CC";
 
 @Injectable()
 export class MemberAuthService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly jwtService: JwtService,
-		private readonly cloudgymClient: CloudgymClientService,
 	) {}
 
 	async loginByCpf(companyId: string, deviceId: string, dto: ClientLoginDto) {
@@ -74,6 +70,15 @@ export class MemberAuthService {
 		);
 	}
 
+	/**
+	 * Cadastro 100% local — nenhuma chamada à CloudGym (ou a qualquer outro
+	 * provedor) acontece aqui. A empresa é sempre dona dos seus próprios
+	 * dados; vincular esse aluno a um provedor externo (CloudGym, Gympass,
+	 * TotalPass, Wellhub) é uma ação separada e opcional que ele faz depois,
+	 * pela tela de agregadores (ver AggregatorLoginService) — não algo
+	 * decidido no cadastro pela empresa como um todo. `dto.planId` sempre
+	 * referencia um PlanContent local (ver PlanService.findAllForCompany).
+	 */
 	async register(companyId: string, deviceId: string, dto: RegisterMemberDto) {
 		if (dto.cpf) {
 			const existing = await this.prisma.member.findFirst({
@@ -86,67 +91,11 @@ export class MemberAuthService {
 			}
 		}
 
-		const integration = await this.prisma.cloudgymIntegration.findUnique({
-			where: { companyId },
-		});
-
-		const member = integration
-			? await this.registerWithCloudgym(companyId, deviceId, dto)
-			: await this.registerLocal(companyId, deviceId, dto);
+		const member = await this.registerLocal(companyId, deviceId, dto);
 
 		return this.issueSession(member.id, member.companyId, deviceId, undefined);
 	}
 
-	private async registerWithCloudgym(
-		companyId: string,
-		deviceId: string,
-		dto: RegisterMemberDto,
-	) {
-		const cloudgymResponse = await this.cloudgymClient.createMember(companyId, {
-			name: dto.name,
-			cpf: dto.cpf,
-			email: dto.email,
-			cellPhoneNumber: dto.phone,
-			plan: Number(dto.planId),
-			methodPayment: dto.methodPayment ?? DEFAULT_METHOD_PAYMENT,
-		});
-
-		const cloudgymMemberId = this.tryParseId(cloudgymResponse);
-
-		return this.prisma.member.create({
-			data: {
-				companyId,
-				cloudgymMemberId,
-				cpf: dto.cpf,
-				name: dto.name,
-				email: dto.email,
-				phone: dto.phone,
-				status: MemberStatus.ACTIVE,
-				contracts: {
-					create: {
-						cloudgymPlanId: Number(dto.planId),
-						status: "ACTIVE",
-						startDate: new Date(),
-						raw: { extras: dto.extras ?? [] },
-					},
-				},
-				logs: {
-					create: {
-						deviceId,
-						event: MemberEvent.REGISTERED_TOTEM,
-						description: "Cadastro realizado pelo totem.",
-						metadata: { extras: dto.extras ?? [], cloudgymResponse },
-					},
-				},
-			},
-		});
-	}
-
-	/**
-	 * Empresa sem CloudgymIntegration — cadastro 100% local, sem nenhuma
-	 * chamada à CloudGym. `dto.planId` referencia um PlanContent local
-	 * (ver PlanService.findLocalPlans).
-	 */
 	private async registerLocal(
 		companyId: string,
 		deviceId: string,
@@ -173,6 +122,8 @@ export class MemberAuthService {
 						price: plan.price,
 						status: "ACTIVE",
 						startDate: new Date(),
+						/** Dia de vencimento nasce do próprio dia do cadastro; o aluno pode trocar depois (PATCH /member/me/contract/due-date). */
+						dueDay: new Date().getDate(),
 						raw: { extras: dto.extras ?? [] },
 					},
 				},
@@ -180,7 +131,7 @@ export class MemberAuthService {
 					create: {
 						deviceId,
 						event: MemberEvent.REGISTERED_TOTEM,
-						description: "Cadastro realizado pelo totem (empresa sem CloudGym).",
+						description: "Cadastro realizado pelo totem.",
 						metadata: { extras: dto.extras ?? [] },
 					},
 				},
@@ -218,10 +169,5 @@ export class MemberAuthService {
 				points: member.points,
 			},
 		};
-	}
-
-	private tryParseId(raw: unknown): number | undefined {
-		const value = Number(raw);
-		return Number.isFinite(value) && !Number.isNaN(value) ? value : undefined;
 	}
 }

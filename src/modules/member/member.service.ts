@@ -8,6 +8,7 @@ import { MemberEvent } from "@prisma/client";
 import { s3 } from "@/common/s3";
 import { PrismaService } from "@/database/prisma/prisma.service";
 import { CloudgymClientService } from "@/modules/cloudgym/cloudgym-client.service";
+import { DueDayOptionService } from "@/modules/due-day-option/due-day-option.service";
 import { mediaUrl } from "@/modules/midias/midias.utils";
 import { PayInvoiceDto } from "./dto/pay-invoice.dto";
 
@@ -21,6 +22,7 @@ export class MemberService {
 	constructor(
 		private readonly prisma: PrismaService,
 		private readonly cloudgymClient: CloudgymClientService,
+		private readonly dueDayOptionService: DueDayOptionService,
 	) {}
 
 	/** Lista de membros da empresa — alimenta a tela de admin (web-genialfit). */
@@ -45,6 +47,62 @@ export class MemberService {
 			...member,
 			avatar: member.avatar ? mediaUrl(member.avatar, MEMBER_AVATAR_SUB) : null,
 		}));
+	}
+
+	/** Detalhe de um membro pro admin (web-genialfit) — inclui contrato ativo pra mostrar plano/vencimento. */
+	async findOneForCompany(companyId: string, memberId: string) {
+		const member = await this.prisma.member.findFirst({
+			where: { id: memberId, companyId },
+			include: {
+				contracts: {
+					where: { status: "ACTIVE" },
+					orderBy: { createdAt: "desc" },
+					take: 1,
+				},
+			},
+		});
+		if (!member) throw new NotFoundException("Cliente não encontrado.");
+
+		return {
+			id: member.id,
+			name: member.name,
+			cpf: member.cpf,
+			matricula: member.matricula,
+			email: member.email,
+			phone: member.phone,
+			status: member.status,
+			avatar: member.avatar ? mediaUrl(member.avatar, MEMBER_AVATAR_SUB) : null,
+			points: member.points,
+			planName: member.contracts[0]?.planName ?? null,
+			price: member.contracts[0]?.price ?? null,
+			dueDay: member.contracts[0]?.dueDay ?? null,
+		};
+	}
+
+	/** Faturas de um membro pro admin — mesma geração local de getInvoices, só com o check de empresa antes. */
+	async getInvoicesForCompany(companyId: string, memberId: string) {
+		await this.assertMemberInCompany(companyId, memberId);
+		return this.getInvoices(memberId);
+	}
+
+	/** Marca fatura como paga por fora do totem (ex.: pagamento recebido na recepção). */
+	async markInvoicePaidByAdmin(
+		companyId: string,
+		memberId: string,
+		invoiceId: string,
+		methodPayment?: string,
+	) {
+		await this.assertMemberInCompany(companyId, memberId);
+		return this.payInvoice(memberId, invoiceId, {
+			methodPayment: methodPayment ?? "Manual (recepção)",
+		});
+	}
+
+	private async assertMemberInCompany(companyId: string, memberId: string) {
+		const member = await this.prisma.member.findFirst({
+			where: { id: memberId, companyId },
+		});
+		if (!member) throw new NotFoundException("Cliente não encontrado.");
 	}
 
 	async getProfile(memberId: string) {
@@ -302,68 +360,83 @@ export class MemberService {
 		return completion;
 	}
 
-	getInvoices(memberId: string) {
+	/**
+	 * Fatura é 100% local — nasce aqui a partir do Contract ativo
+	 * (price/dueDay), não de um webhook da CloudGym (isso volta quando a
+	 * ligação via agregador for implementada de verdade). Sem
+	 * scheduler/cron nesta rodada: a fatura do próximo ciclo só nasce
+	 * quando a atual é paga (ver payInvoice) ou, na primeira consulta,
+	 * quando ainda não existe nenhuma — e o status OVERDUE é recalculado
+	 * na leitura, não por um job noturno.
+	 */
+	async getInvoices(memberId: string) {
+		await this.syncLocalInvoices(memberId);
 		return this.prisma.invoice.findMany({
 			where: { memberId },
 			orderBy: { dueDate: "desc" },
 		});
 	}
 
-	async payInvoice(
-		memberId: string,
-		companyId: string,
-		invoiceId: string,
-		dto: PayInvoiceDto,
-	) {
+	async payInvoice(memberId: string, invoiceId: string, dto: PayInvoiceDto) {
 		const invoice = await this.prisma.invoice.findFirst({
 			where: { id: invoiceId, memberId },
 		});
-		if (!invoice || invoice.cloudgymInvoiceId === null) {
+		if (!invoice) {
 			throw new NotFoundException("Fatura não encontrada.");
 		}
+		if (invoice.status === "PAID") {
+			throw new BadRequestException("Fatura já está paga.");
+		}
 
-		const result = await this.cloudgymClient.payInvoice(
-			companyId,
-			invoice.cloudgymInvoiceId,
-			dto,
-		);
+		/**
+		 * Sem gateway de pagamento próprio: Pix/Débito/Crédito no totem são
+		 * telas instrutivas (escaneie QR / insira o cartão na maquininha
+		 * POS) — quando o aluno chega aqui, o staff já viu o pagamento
+		 * acontecer fisicamente, então marcamos como pago na hora, sem
+		 * confirmação assíncrona de terceiro.
+		 */
+		const paid = await this.prisma.invoice.update({
+			where: { id: invoice.id },
+			data: { status: "PAID", paidAt: new Date(), methodPayment: dto.methodPayment },
+		});
 
-		// Confirmação definitiva de status chega via webhook (payment.confirmed);
-		// aqui só sinalizamos otimisticamente que o pagamento foi enviado.
 		await this.prisma.memberLog.create({
 			data: {
 				memberId,
 				event: MemberEvent.INVOICE_PAID,
-				description: `Pagamento da fatura ${invoice.id} enviado à CloudGym.`,
-				metadata: { invoiceId: invoice.id, response: result },
+				description: `Pagamento da fatura ${invoice.id} registrado no totem.`,
+				metadata: { invoiceId: invoice.id, methodPayment: dto.methodPayment },
 			},
 		});
 
-		return { ok: true };
+		await this.syncLocalInvoices(memberId);
+
+		return paid;
 	}
 
-	confirmPayment(companyId: string, tid: string) {
-		return this.cloudgymClient.confirmPayment(companyId, tid);
-	}
-
+	/**
+	 * O dia de vencimento é escolhido pelo aluno, mas só dentre o que a
+	 * empresa cadastrou (DueDayOption) — evita o aluno mandar qualquer
+	 * inteiro 1-31 direto pela API, fora do que o totem realmente oferece.
+	 */
 	async changeDueDate(memberId: string, companyId: string, newDueDay: number) {
-		const contract = await this.getActiveCloudgymContract(memberId);
+		const contract = await this.getActiveContract(memberId);
 
-		await this.cloudgymClient.changeContractDueDate(
-			companyId,
-			contract.cloudgymContractId as number,
-			newDueDay,
-		);
+		const isValid = await this.dueDayOptionService.isValidDayForCompany(companyId, newDueDay);
+		if (!isValid) {
+			throw new BadRequestException(
+				"Esse dia de vencimento não está disponível para esta empresa.",
+			);
+		}
 
 		const updated = await this.prisma.contract.update({
 			where: { id: contract.id },
 			data: { dueDay: newDueDay },
 		});
-
 		return { dueDay: updated.dueDay };
 	}
 
-	private async getActiveCloudgymContract(memberId: string) {
+	private async getActiveContract(memberId: string) {
 		const contract = await this.prisma.contract.findFirst({
 			where: { memberId, status: "ACTIVE" },
 			orderBy: { createdAt: "desc" },
@@ -371,11 +444,50 @@ export class MemberService {
 		if (!contract) {
 			throw new NotFoundException("Contrato ativo não encontrado.");
 		}
-		if (contract.cloudgymContractId === null) {
-			throw new BadRequestException(
-				"Contrato não está vinculado à CloudGym.",
-			);
-		}
 		return contract;
+	}
+
+	private async syncLocalInvoices(memberId: string) {
+		const contract = await this.prisma.contract.findFirst({
+			where: { memberId, status: "ACTIVE" },
+			orderBy: { createdAt: "desc" },
+		});
+		if (!contract || contract.price === null) return;
+
+		const latest = await this.prisma.invoice.findFirst({
+			where: { contractId: contract.id },
+			orderBy: { dueDate: "desc" },
+		});
+
+		if (!latest) {
+			await this.prisma.invoice.create({
+				data: {
+					memberId,
+					contractId: contract.id,
+					amount: contract.price,
+					dueDate: this.nextDueDate(contract.startDate ?? contract.createdAt, contract.dueDay),
+					status: "PENDING",
+				},
+			});
+			return;
+		}
+
+		if (latest.status === "PENDING" && latest.dueDate < new Date()) {
+			await this.prisma.invoice.update({
+				where: { id: latest.id },
+				data: { status: "OVERDUE" },
+			});
+		}
+	}
+
+	/** Avança 1 mês de calendário a partir de `from`, ajustando pro dia de vencimento do contrato. */
+	private nextDueDate(from: Date, dueDay: number | null): Date {
+		const next = new Date(from);
+		next.setMonth(next.getMonth() + 1);
+		if (dueDay) {
+			const lastDayOfMonth = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+			next.setDate(Math.min(dueDay, lastDayOfMonth));
+		}
+		return next;
 	}
 }

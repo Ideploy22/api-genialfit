@@ -16,7 +16,9 @@ import {
 } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/auth/jwt-auth.guard";
 import { ApiStandardResponse } from "@/common/decorators/api-standard-response.decorator";
+import { CloudgymClientService } from "./cloudgym-client.service";
 import { CloudgymIntegrationService } from "./cloudgym-integration.service";
+import { DiscoverCloudgymUnitsDto } from "./dto/discover-cloudgym-units.dto";
 import { CreateCloudgymIntegrationDto } from "./dto/create-cloudgym-integration.dto";
 import { UpdateCloudgymIntegrationDto } from "./dto/update-cloudgym-integration.dto";
 import { CloudgymIntegrationEntity } from "./entities/cloudgym-integration.entity";
@@ -26,7 +28,20 @@ import { CloudgymIntegrationEntity } from "./entities/cloudgym-integration.entit
 @ApiBearerAuth()
 @Controller("cloudgym/integration")
 export class CloudgymIntegrationController {
-	constructor(private readonly service: CloudgymIntegrationService) {}
+	constructor(
+		private readonly service: CloudgymIntegrationService,
+		private readonly cloudgymClient: CloudgymClientService,
+	) {}
+
+	@Post("discover-units")
+	@ApiOperation({
+		summary: "Listar unidades da conta CloudGym a partir de usuário/senha",
+		description:
+			"Autentica direto na CloudGym com as credenciais informadas e devolve as unidades da conta (id numérico + nome) — não salva nada. Usado no formulário do admin pra achar o unitId certo sem precisar caçar no painel da CloudGym.",
+	})
+	discoverUnits(@Body() dto: DiscoverCloudgymUnitsDto) {
+		return this.cloudgymClient.discoverUnits(dto.username, dto.password, dto.baseUrl);
+	}
 
 	@Post()
 	@ApiOperation({
