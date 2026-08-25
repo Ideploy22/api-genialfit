@@ -19,25 +19,23 @@ FROM dependencies AS builder
 
 WORKDIR /app
 
-# Arquivos necessários para gerar o Prisma Client
+# Prisma
 COPY prisma ./prisma/
 COPY prisma.config.ts ./
 
-# Gera o Prisma Client
-# DATABASE_URL é apenas uma variável dummy para validação do config
 RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" \
     pnpm prisma generate
 
-# Configurações do NestJS/TypeScript
+# NestJS / TypeScript
 COPY tsconfig.json tsconfig.build.json nest-cli.json ./
 
-# Código-fonte
+# Código
 COPY src ./src/
 
-# Build da aplicação
+# Build
 RUN pnpm build
 
-# Corrige aliases como @/xxx para caminhos relativos
+# Corrige aliases do TypeScript
 RUN pnpm exec tsc-alias -p tsconfig.build.json
 
 
@@ -53,7 +51,7 @@ ENV NODE_ENV=production
 RUN corepack enable && corepack prepare pnpm@9 --activate
 
 # =============================================================
-# Dependências de produção
+# Production dependencies
 # =============================================================
 
 COPY package.json pnpm-lock.yaml ./
@@ -68,24 +66,26 @@ RUN pnpm install --frozen-lockfile --prod
 COPY prisma ./prisma/
 COPY prisma.config.ts ./
 
+# Prisma Client gerado no builder
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
 # =============================================================
-# Aplicação compilada
+# Application
 # =============================================================
 
 COPY --from=builder /app/dist ./dist
 
-# =============================================================
-# EntryPoint
-# =============================================================
-
-COPY docker-entrypoint.sh ./
-
-RUN chmod +x docker-entrypoint.sh
 
 # =============================================================
-# Configuração da aplicação
+# Network
 # =============================================================
 
-EXPOSE 4444
+EXPOSE 5000
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+
+# =============================================================
+# Start
+# =============================================================
+
+CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/main.js"]
