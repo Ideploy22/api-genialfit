@@ -66,9 +66,10 @@ RUN pnpm install --frozen-lockfile --prod
 COPY prisma ./prisma/
 COPY prisma.config.ts ./
 
-# Prisma Client gerado no builder
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# Com pnpm, o Prisma Client gerado fica dentro do virtual store
+# (node_modules/.pnpm/...), então não dá pra copiar do builder — gera de novo aqui.
+RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" \
+    pnpm prisma generate
 
 # =============================================================
 # Application
