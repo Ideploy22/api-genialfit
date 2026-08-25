@@ -89,4 +89,4 @@ EXPOSE 5000
 # Start
 # =============================================================
 
-CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/main.js"]
+CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/src/main.js"]
