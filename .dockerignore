@@ -1,41 +1,25 @@
-# Dependências e build local
 node_modules
 dist
-coverage
+.git
+.gitignore
+Dockerfile
+Dockerfile.*
+docker-compose.yml
+docker-compose.*.yml
 
-# Variáveis de ambiente (nunca entra na imagem)
 .env
 .env.*
 !.env.example
 
-# Git
-.git
-.gitignore
-.gitattributes
-
-# Editor e OS
-.vscode
-.idea
-*.swp
-*.swo
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 pnpm-debug.log*
 
-# Testes
-test
-**/*.spec.ts
-**/*.e2e-spec.ts
+coverage
+.nyc_output
 
-# Documentação
-README.md
-CHANGELOG.md
+.vscode
+.idea
+
 *.md
-
-# CI/CD
-.github
-.gitlab-ci.yml
