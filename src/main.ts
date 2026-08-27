@@ -55,7 +55,7 @@ async function bootstrap() {
 
 	app.useGlobalFilters(new PrismaExceptionFilter());
 
-	await app.register(multipart, { limits: { fileSize: 300 * 1024 * 1024 } });
+	await app.register(multipart);
 
 	await app.listen(process.env.PORT || 4000, "0.0.0.0");
 }

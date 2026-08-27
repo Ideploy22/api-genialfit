@@ -1,29 +1,27 @@
 import { Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import type { MultipartFile } from "@fastify/multipart";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3, s3Client } from "@/common/s3";
 
 const SUB = "app-updates";
 
 @Injectable()
 export class AppUpdateService {
-	async uploadArtifact(file: MultipartFile, secret: string | undefined) {
+	// Instaladores passam de 100MB — enviá-los via multipart pela nossa API
+	// bate no limite de upload do Cloudflare (que fica na frente da API), que
+	// rejeita corpo de requisição > 100MB com 413. Uma URL pré-assinada manda
+	// o arquivo direto pro S3/R2, sem passar pela nossa API nem pelo Cloudflare.
+	async getUploadUrl(filename: string, secret: string | undefined) {
 		if (!secret || secret !== process.env.APP_UPDATE_SECRET) {
 			throw new UnauthorizedException("Secret de update inválido.");
 		}
 
-		const buffer = await file.toBuffer();
-
-		await s3Client().send(
-			new PutObjectCommand({
-				Bucket: process.env.S3_BUCKET,
-				Key: `${SUB}/${file.filename}`,
-				Body: buffer,
-				ContentType: file.mimetype || "application/octet-stream",
-			}),
-		);
-
-		return { filename: file.filename, size: buffer.length };
+		const command = new PutObjectCommand({
+			Bucket: process.env.S3_BUCKET,
+			Key: `${SUB}/${filename}`,
+		});
+		const url = await getSignedUrl(s3Client(), command, { expiresIn: 600 });
+		return { url };
 	}
 
 	async getArtifact(filename: string) {

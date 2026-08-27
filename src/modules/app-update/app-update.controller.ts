@@ -1,15 +1,6 @@
-import {
-	BadRequestException,
-	Controller,
-	Get,
-	Headers,
-	Param,
-	Post,
-	Req,
-	Res,
-} from "@nestjs/common";
-import { ApiBody, ApiConsumes, ApiOperation, ApiProduces, ApiTags } from "@nestjs/swagger";
-import type { FastifyReply, FastifyRequest } from "fastify";
+import { BadRequestException, Controller, Get, Headers, Param, Query, Res } from "@nestjs/common";
+import { ApiOperation, ApiProduces, ApiQuery, ApiTags } from "@nestjs/swagger";
+import type { FastifyReply } from "fastify";
 import { AppUpdateService } from "./app-update.service";
 
 @ApiTags("App Update")
@@ -17,25 +8,22 @@ import { AppUpdateService } from "./app-update.service";
 export class AppUpdateController {
 	constructor(private readonly service: AppUpdateService) {}
 
-	@Post("upload")
-	@ApiConsumes("multipart/form-data")
-	@ApiBody({
-		schema: { type: "object", properties: { file: { type: "string", format: "binary" } } },
-	})
+	@Get("upload-url")
 	@ApiOperation({
-		summary: "Publicar artefato de update",
+		summary: "Gerar URL pré-assinada pra publicar um artefato de update",
 		description:
-			"Chamado só pelo CI ao cortar uma tag de versão. Autenticado por X-Update-Secret " +
-			"(APP_UPDATE_SECRET no .env). Grava o arquivo no S3 com o nome original " +
-			"(latest.yml, *.exe, *.exe.blockmap).",
+			"Chamado só pelo processo de release (local ou CI). Autenticado por X-Update-Secret " +
+			"(APP_UPDATE_SECRET no .env). Devolve uma URL de PUT direta pro S3/R2, válida por 10 " +
+			"minutos — o arquivo (latest.yml, *.exe, *.exe.blockmap) é enviado direto pro bucket, " +
+			"sem passar pela API (instaladores passam do limite de upload do Cloudflare).",
 	})
-	async upload(
-		@Req() req: FastifyRequest,
+	@ApiQuery({ name: "filename", required: true, example: "genial-fit-1.0.1-setup.exe" })
+	async getUploadUrl(
+		@Query("filename") filename: string,
 		@Headers("x-update-secret") secret: string | undefined,
 	) {
-		const file = await req.file();
-		if (!file) throw new BadRequestException("Arquivo não enviado.");
-		return this.service.uploadArtifact(file, secret);
+		if (!filename) throw new BadRequestException("filename é obrigatório.");
+		return this.service.getUploadUrl(filename, secret);
 	}
 
 	@Get(":filename")
