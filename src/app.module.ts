@@ -6,6 +6,7 @@ import { AllExceptionsFilter } from "./common/filters/all-exception";
 import { PrismaExceptionFilter } from "./common/filters/prisma-exception.filter";
 import { PrismaModule } from "./database/prisma/prisma.module";
 import { AggregatorModule } from "./modules/aggregator/aggregator.module";
+import { AppUpdateModule } from "./modules/app-update/app-update.module";
 import { BannerModule } from "./modules/banner/banner.module";
 import { CloudgymModule } from "./modules/cloudgym/cloudgym.module";
 import { CompanyModule } from "./modules/company/company.module";
@@ -35,6 +36,7 @@ import { WorkoutModule } from "./modules/workout/workout.module";
 		WorkoutModule,
 		PaymentMethodModule,
 		DueDayOptionModule,
+		AppUpdateModule,
 	],
 	providers: [
 		{
