@@ -33,15 +33,48 @@ export interface CloudgymUnitSummary {
 }
 
 /**
+ * Shape observado em produção para `GET /customer/{unitId}` (schema
+ * `InactiveCustomerDTO` no cloudgym.json — o nome é enganoso, o endpoint
+ * retorna clientes ativos e inativos). Digitado à mão em vez de gerado, já
+ * que `schema.d.ts` ainda não foi regenerado com esse endpoint.
+ */
+export interface CloudgymCustomer {
+	id: number;
+	name: string;
+	email: string;
+	cpf: string;
+	status: string;
+	plan: string;
+	phoneNumber: string;
+	cellPhoneNumber: string;
+	startDate: string;
+	endDate: string;
+	contracts: number;
+	contractsInactive: number;
+}
+
+export interface CloudgymCustomerPage {
+	content: CloudgymCustomer[];
+	page: number;
+	size: number;
+	totalElements: number;
+	totalPages: number;
+	first: boolean;
+	last: boolean;
+}
+
+/**
  * Client HTTP para a API da CloudGym (plataforma de gestão da academia).
  * Cada Company tem sua própria unidade/credenciais (ver CloudgymIntegration),
  * então toda chamada precisa do companyId para resolver token e unitId.
  *
  * A CloudGym expõe majoritariamente escrita (criar membro/contrato/fatura) e
- * poucos GETs (catálogos por unidade, histórico por memberId) — não há busca
- * de membro por CPF nem listagem de fatura por membro, por isso o cache local
- * (Member/Contract/Invoice) é alimentado via webhook, não por polling deste
- * client.
+ * poucos GETs (catálogos por unidade, histórico por memberId). Não há
+ * listagem de fatura por membro, mas **existe** busca por CPF via
+ * `GET /customer/{unitId}?filter=cpf:<cpf>` (confirmado em 2026-08-29 contra
+ * a CloudGym real — ver `findCustomerByCpf`), então o cache local
+ * (Member/Contract/Invoice) segue alimentado via webhook, mas pode ser
+ * complementado por essa busca sob demanda quando fizer sentido.
  */
 @Injectable()
 export class CloudgymClientService {
@@ -287,6 +320,34 @@ export class CloudgymClientService {
 			`/workout/exercise/${exerciseId}`,
 			{ method: "GET" },
 		);
+	}
+
+	/**
+	 * Busca um cliente por CPF em `GET /customer/{unitId}?filter=cpf:<cpf>`.
+	 * Confirmado contra a CloudGym real em 2026-08-29 — `filter=cpf:<cpf>` e
+	 * `filter=cpf=<cpf>` funcionam, `cpf==<cpf>` (duplo igual) não retorna
+	 * nada. CPF precisa ir só com dígitos (sem pontuação), como a CloudGym
+	 * devolve. A maioria dos clientes dessa unidade de teste não tem CPF
+	 * preenchido — retorna `undefined` tanto pra "não encontrado" quanto pra
+	 * "CPF em branco no cadastro".
+	 */
+	async findCustomerByCpf(
+		companyId: string,
+		cpf: string,
+	): Promise<CloudgymCustomer | undefined> {
+		const digitsOnly = cpf.replace(/\D/g, "");
+		if (!digitsOnly) return undefined;
+
+		const { unitId } = await this.getIntegration(companyId);
+		const result = await this.request<CloudgymCustomerPage>(
+			companyId,
+			`/customer/${unitId}`,
+			{
+				method: "GET",
+				query: { page: "0", size: "1", filter: `cpf:${digitsOnly}` },
+			},
+		);
+		return result.content[0];
 	}
 
 	// ── Escrita ──────────────────────────────────────────────────────────────

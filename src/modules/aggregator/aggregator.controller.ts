@@ -48,7 +48,7 @@ export class AggregatorController {
 	@ApiOperation({
 		summary: "Login do cliente via agregador (token)",
 		description:
-			"CloudGym: token é o CPF/matrícula do aluno, resolvido contra o Member já sincronizado localmente. Outros provedores: estrutura pronta, validação real pendente de credenciais (ver AggregatorLoginService).",
+			"CloudGym: token é o CPF do aluno — busca sempre direto na CloudGym (GET /customer/{unitId}?filter=cpf:), nunca na base local; se não achar lá, erro. Fluxo independente do login local principal. Outros provedores: estrutura pronta, validação real pendente de credenciais (ver AggregatorLoginService).",
 	})
 	login(@Body() dto: AggregatorLoginDto, @DeviceLogged() device: PropsDeviceLogado) {
 		return this.loginService.login(

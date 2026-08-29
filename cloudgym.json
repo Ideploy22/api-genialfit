@@ -1490,6 +1490,42 @@
         }
       }
     },
+    "/auth/logout": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Logout user and clear authentication cookie",
+        "description": "POST /logout clears the access_token cookie from the browser by setting an expired cookie.",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Authenticate user and get JWT token via cookie",
+        "description": "POST /login supports grant_type=password (prefers Basic Authorization header; accepts username/password in JSON body as fallback) or grant_type=google|microsoft|apple (authorization code flows). Unlike /token, returns the access_token as an HTTP-only cookie instead of in the response payload.",
+        "operationId": "loginWeb",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TokenRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": { "*/*": { "schema": { "type": "string" } } }
+          }
+        },
+        "security": [{ "basicAuth": [] }]
+      }
+    },
     "/api/wellhub/sync/unit/{unitId}": {
       "post": {
         "tags": ["Wellhub Integration"],
@@ -2366,6 +2402,57 @@
           }
         ],
         "responses": { "200": { "description": "OK" } },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/customer/{unitId}": {
+      "get": {
+        "tags": ["Customer"],
+        "summary": "Get all customers",
+        "description": "Retrieves a paginated list of customers. Use standard Spring Pageable params: page, size, sort and filter for status/fields.",
+        "operationId": "getAllCustomers",
+        "parameters": [
+          {
+            "name": "unitId",
+            "in": "path",
+            "description": "Unit id",
+            "required": true,
+            "schema": { "type": "integer" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": { "type": "integer", "default": 1000 }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "schema": { "type": "array", "items": { "type": "string" } }
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "description": "Single filter expression. Supports :, =, >, >=, <, <= and AND/OR with parentheses.",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseInactiveCustomerDTO"
+                }
+              }
+            }
+          }
+        },
         "security": [{ "bearerAuth": [] }]
       }
     },
@@ -4496,6 +4583,47 @@
           "registerDate": { "type": "string", "format": "date-time" },
           "status": { "type": "string" },
           "transaction": { "type": "string" }
+        }
+      },
+      "InactiveCustomerDTO": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64" },
+          "name": { "type": "string" },
+          "email": { "type": "string" },
+          "birthDay": { "type": "string", "format": "date-time" },
+          "phoneNumber": { "type": "string" },
+          "cellPhoneNumber": { "type": "string" },
+          "plan": { "type": "string" },
+          "startDate": { "type": "string", "format": "date-time" },
+          "endDate": { "type": "string", "format": "date-time" },
+          "status": { "type": "string" },
+          "source": { "type": "string" },
+          "salesRep": { "type": "string" },
+          "state": { "type": "string" },
+          "city": { "type": "string" },
+          "zipCode": { "type": "string" },
+          "rg": { "type": "string" },
+          "cpf": { "type": "string" },
+          "gender": { "type": "string" },
+          "nps": { "type": "string" },
+          "contracts": { "type": "integer", "format": "int64" },
+          "contractsInactive": { "type": "integer", "format": "int64" }
+        }
+      },
+      "PageResponseInactiveCustomerDTO": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/InactiveCustomerDTO" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
         }
       },
       "ClassAttendanceMemberDTO": {

@@ -139,7 +139,8 @@ export class MemberAuthService {
 		});
 	}
 
-	private async issueSession(
+	/** Emite o JWT de sessão do cliente pra um memberId já resolvido — usado tanto pelos logins locais (CPF/matrícula/QR/cadastro) quanto pelo login de agregador (que resolve o member por fora, direto na API do provedor). */
+	async issueSession(
 		memberId: string,
 		companyId: string,
 		deviceId: string,
