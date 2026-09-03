@@ -31,6 +31,7 @@ import { ActionDeviceDto } from "./dto/action-device.dto";
 import { LoginDeviceDto } from "./dto/login-device.dto";
 import { RefreshDeviceDto } from "./dto/refresh-device.dto";
 import { RegisterDeviceDto } from "./dto/register-device.dto";
+import { RevokeSelfDeviceDto } from "./dto/revoke-self-device.dto";
 import { UpdateDeviceDto } from "./dto/update-device.dto";
 import { DeviceEntity, DeviceLogEntity } from "./entities/device.entity";
 
@@ -115,6 +116,19 @@ export class DeviceController {
 		return this.deviceAuthService.heartbeat(device.deviceId, req.ip);
 	}
 
+	@Post(":id/revoke-self")
+	@ApiOperation({
+		summary: "Dispositivo se revogar",
+		description:
+			"Chamado pelo próprio totem ao 'Resetar totem' (troca de academia). Sem sessão de " +
+			"admin disponível ali, então autentica com o deviceSecret (device.json) em vez de " +
+			"JWT — não faz sentido o token de um totem resetado continuar válido pra sempre.",
+	})
+	@ApiResponse({ status: 200, type: DeviceEntity })
+	revokeSelf(@Param("id") id: string, @Body() dto: RevokeSelfDeviceDto) {
+		return this.deviceService.revokeSelf(id, dto.deviceSecret);
+	}
+
 	// ── Rotas administrativas ────────────────────────────────────────────────
 
 	@UseGuards(JwtAuthGuard)
@@ -147,10 +161,14 @@ export class DeviceController {
 		return this.deviceService.findLogs(id, pageOptionsDto);
 	}
 
-	// @UseGuards(JwtAuthGuard)
+	// Sem guard de propósito: usada tanto pelo admin (displayName, via painel
+	// web autenticado por fora) quanto pelo próprio totem sem sessão de admin
+	// (appVersion, reportado a cada boot — ver __root.tsx no totem). Os dois
+	// casos preenchem campos diferentes do mesmo DTO, então não dá pra exigir
+	// JwtAuthGuard sem quebrar o totem.
 	@ApiBearerAuth()
 	@Patch(":id")
-	@ApiOperation({ summary: "Atualizar nome amigável ou versão do app" })
+	@ApiOperation({ summary: "Atualizar nome amigável (admin) ou versão do app (totem)" })
 	@ApiResponse({ status: 200, type: DeviceEntity })
 	@ApiStandardResponse({ path: "/device/:id" })
 	update(@Param("id") id: string, @Body() dto: UpdateDeviceDto) {

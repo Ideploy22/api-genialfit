@@ -2,6 +2,7 @@ import {
 	ConflictException,
 	Injectable,
 	NotFoundException,
+	UnauthorizedException,
 	UnprocessableEntityException,
 } from "@nestjs/common";
 import { DeviceEvent, DeviceStatus, Prisma } from "@prisma/client";
@@ -212,6 +213,38 @@ export class DeviceService {
 			throw new ConflictException("Dispositivo já está revogado.");
 		}
 
+		return this.revokeTransaction(
+			id,
+			revokedBy,
+			dto.reason ?? "Dispositivo revogado pelo administrador.",
+		);
+	}
+
+	/**
+	 * O próprio totem se revoga ao "Resetar totem" (troca de academia) — sem
+	 * sessão de admin disponível ali, então a prova de identidade é o
+	 * deviceSecret (device.json), o mesmo usado em POST /device/auth/login.
+	 * Idempotente: reset chamado 2x (ex.: falha de rede no meio) não deve
+	 * quebrar por "já revogado".
+	 */
+	async revokeSelf(id: string, deviceSecret: string) {
+		const device = await this.prisma.device.findUnique({ where: { id } });
+		if (!device) throw new NotFoundException("Dispositivo não encontrado.");
+
+		const secretValid = await bcrypt.compare(deviceSecret, device.deviceSecret);
+		if (!secretValid) {
+			throw new UnauthorizedException("Credenciais inválidas.");
+		}
+
+		if (device.status === DeviceStatus.REVOKED) {
+			return device;
+		}
+
+		await this.revokeTransaction(id, "device", "Totem resetado pelo próprio dispositivo.");
+		return this.prisma.device.findUniqueOrThrow({ where: { id } });
+	}
+
+	private revokeTransaction(id: string, revokedBy: string, description: string) {
 		return this.prisma.$transaction([
 			this.prisma.device.update({
 				where: { id },
@@ -222,8 +255,7 @@ export class DeviceService {
 					logs: {
 						create: {
 							event: DeviceEvent.DEVICE_REVOKED,
-							description:
-								dto.reason ?? "Dispositivo revogado pelo administrador.",
+							description,
 							metadata: { revokedBy },
 						},
 					},

@@ -117,9 +117,16 @@ export class CompanyService {
 		return this.mapLogos(item);
 	}
 
+	/**
+	 * `unicName` é sempre salvo minúsculo (ver CreateCompanyDto), mas essa
+	 * rota é pública e recebe o parâmetro cru da URL, sem passar pelo
+	 * ValidationPipe/DTO — normaliza aqui também, senão um totem que envie
+	 * caixa diferente (ou uma linha antiga, de antes dessa normalização)
+	 * cai num findUnique case-sensitive do Postgres e nunca acha a empresa.
+	 */
 	async findByUnicName(unicName: string) {
 		const item = await this.prisma.company.findUnique({
-			where: { unicName },
+			where: { unicName: unicName.trim().toLowerCase() },
 			include: includeColors,
 		});
 		if (!item) throw new NotFoundException("Empresa não encontrada");

@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { CompanyType } from "@prisma/client";
+import { Transform } from "class-transformer";
 import {
 	IsEnum,
 	IsNotEmpty,
@@ -31,9 +32,18 @@ export class CreateCompanyDto {
 	@IsString()
 	name: string;
 
-	@ApiProperty({ example: "GENIALFIT" })
+	/**
+	 * Sempre minúsculo, mesmo que a empresa/totem envie diferente — é a chave
+	 * de busca pública do totem (GET /company/public/:unicName) contra um
+	 * findUnique case-sensitive do Postgres, então cadastro em caixa
+	 * diferente do que o totem consulta já gerou "empresa não encontrada"
+	 * (o totem forçava UPPERCASE na busca). Normalizar aqui garante que
+	 * nunca mais dependa de quem digitou usar a mesma caixa.
+	 */
+	@ApiProperty({ example: "genialfit" })
 	@IsNotEmpty()
 	@IsString()
+	@Transform(({ value }) => (typeof value === "string" ? value.trim().toLowerCase() : value))
 	unicName: string;
 
 	@ApiProperty({ enum: CompanyType, example: CompanyType.JURIDICA })
